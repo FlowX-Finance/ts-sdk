@@ -1,0 +1,33 @@
+{
+  "name": "@flowx-finance/sdk",
+  "version": "0.0.1",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "dependencies": {
+    "@apollo/client": "^3.8.5",
+    "@mysten/sui.js": "^0.35.1",
+    "bignumber.js": "^9.1.2",
+    "dotenv": "^16.0.3",
+    "graphql": "^16.8.1",
+    "graphql-request": "^6.1.0",
+    "graphql-tag": "^2.12.6",
+    "lodash": "^4.17.21"
+  },
+  "scripts": {
+    "start": "node dist/index",
+    "ts-node": "ts-node",
+    "build": "tsup",
+    "test": "mocha --timeout 10000 -r dotenv/config -r tsconfig-paths/register -r ts-node/register tests/*.spec.ts"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.194",
+    "@types/mocha": "^10.0.1",
+    "mocha": "^10.2.0",
+    "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.2.0",
+    "tsup": "^7.2.0",
+    "typescript": "^5.0.4"
+  }
+}
