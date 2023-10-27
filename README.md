@@ -1,4 +1,4 @@
-## Official Aftermath Finance TypeScript SDK for Sui
+## Official FlowX Finance TypeScript SDK for Sui
 An FlowX Typescript SDK is a software development kit that allows developers to interact with FlowX protocols using the Typescript programming language. 
 
 ## Features
