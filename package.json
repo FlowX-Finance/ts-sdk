@@ -1,12 +1,11 @@
 {
   "name": "@flowx-pkg/ts-sdk",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "dependencies": {
-    "@apollo/client": "^3.8.5",
     "@mysten/sui.js": "^0.35.1",
     "bignumber.js": "^9.1.2",
     "dotenv": "^16.0.3",
@@ -19,6 +18,7 @@
     "start": "node dist/index",
     "ts-node": "ts-node",
     "build": "tsup",
+    "prepare": "npm run build",
     "test": "mocha --timeout 10000 -r dotenv/config -r tsconfig-paths/register -r ts-node/register tests/*.spec.ts"
   },
   "devDependencies": {
