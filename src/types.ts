@@ -95,6 +95,7 @@ export interface IPools {
     aprPerformance7D?: string;
     fee24H?: string;
     totalLiquidity?: string;
+    totalLiquidityInUSD?: string;
     transaction24H?: number;
     volume7D: string;
     volume24H?: string;
@@ -104,6 +105,11 @@ export interface IPools {
   reserveX?: Reserve;
   reserveY?: Reserve;
   __typename?: string;
+}
+export interface IGetLpPrice {
+  poolInfo: IPools;
+  coinX: CoinMetadata;
+  coinY: CoinMetadata;
 }
 export interface ILiquidity extends IFullDataCoins, IPools {}
 export interface IPoolInfos extends IRawCoins, IPools {}
@@ -137,4 +143,41 @@ export interface IFaasData {
   coinY: CoinMetadata;
   userReward: IFaasUserRw[];
   totalLpDeposit: string;
+}
+export interface IPairsRankingItem {
+  reserveX: number;
+  reserveY: number;
+  stats: {
+    volume7D: string;
+    volume24H: string;
+    transaction24H: number;
+    totalLiquidityInUSD: string;
+    totalLiquidity: string;
+    fee24H: string;
+    aprPerformance7D: string;
+  };
+  lpType: string;
+  lpObjectId: string;
+  lpName: string;
+  explorerUrl: string;
+  createdBy: string;
+  createdAtTimestamp: number;
+  coinY: string;
+  coinX: string;
+}
+export interface IFaasV2 {
+  id: string;
+  poolIndex: string;
+  started_at_ms: string | number;
+  ended_at_ms: string | number;
+  creator: string;
+  totalLiquid: string | number;
+  totalLpDeposit: string;
+  rewardApr: string;
+  tradingApr: string;
+  userReward: IFaasUserRw[];
+  poolReward: IFaasUserRw[];
+  isLegacy: boolean;
+  lpPrice: string;
+  poolLiquid: IPoolInfo;
 }

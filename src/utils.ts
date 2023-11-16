@@ -15,9 +15,20 @@ import {
   provider,
 } from "./constants";
 import { BIG_TEN, BigNumberInstance } from "./BigNumber";
-import { CoinMetadata, ICoinBalance, IPoolInfo, IPools } from "./types";
+import {
+  CoinMetadata,
+  ICoinBalance,
+  IGetLpPrice,
+  IPairsRankingItem,
+  IPoolInfo,
+  IPools,
+} from "./types";
 import Lodash from "./lodash";
-import { COIN_SETTING_QUERY, GET_PAIRS } from "./queries";
+import {
+  COIN_SETTING_QUERY,
+  GET_PAIRS,
+  GET_PAIR_RANKING_INFO,
+} from "./queries";
 import { isObject } from "lodash";
 
 export const nowInMilliseconds = () => {
@@ -187,7 +198,16 @@ export const standardizeType = (type: string) => {
   });
   return type === SUI_TYPE ? SUI_TYPE : originalCoinX;
 };
-
+export const getLpPrice = ({ poolInfo, coinX, coinY }: IGetLpPrice) => {
+  const { amountX, amountY } = calculateReceiveAmount(poolInfo, coinX, coinY);
+  const amountXValueInUsd = BigNumberInstance(amountX).multipliedBy(
+    coinX.derivedPriceInUSD
+  );
+  const amountYValueInUsd = BigNumberInstance(amountY).multipliedBy(
+    coinY.derivedPriceInUSD
+  );
+  return amountXValueInUsd.plus(amountYValueInUsd).toFixed();
+};
 export const sortData = (
   inputData: any[],
   sortType?: string,
@@ -235,7 +255,15 @@ export const getFullyOwnedObjects = async (
 
   return data;
 };
-const getPoolInfos = async (lpObjectIds: string[]): Promise<IPoolInfo[]> => {
+export const extractTypeFaas = (type: string) => {
+  const pair = type.split("Pool<")[1];
+  const coinXType = pair.split(", ")[0];
+  const coinYType = pair.split(", ")[1];
+  return { coinXType, coinYType };
+};
+export const getPoolInfos = async (
+  lpObjectIds: string[]
+): Promise<IPoolInfo[]> => {
   try {
     const splitObjectIds = [];
     //split array if array is more than 50 elements because
@@ -372,4 +400,16 @@ export const initTxBlock = async (
   //   arguments: args,
   // });
   return tx;
+};
+export const getPairsRankingFlowX = async (): Promise<any> => {
+  try {
+    const res: any = await client.request(GET_PAIR_RANKING_INFO, {
+      page: 1,
+      size: 100,
+    });
+    const listData: IPairsRankingItem[] = res.getPairRankings.items;
+    return listData;
+  } catch (error) {
+    throw error;
+  }
 };

@@ -14,12 +14,13 @@ export const GET_PAIRS = gql`
       createdAtTimestamp
       createdBy
       stats {
+        aprPerformance7D
+        fee24H
+        totalLiquidity
+        totalLiquidityInUSD
+        transaction24H
         volume7D
         volume24H
-        transaction24H
-        totalLiquidity
-        fee24H
-        aprPerformance7D
       }
     }
   }
@@ -61,6 +62,49 @@ export const GET_POSITION_APR_PDRW = gql`
     multiGetPositionsStats(farmObjectId: $farmObjectId, objectIds: $objectIds) {
       apr
       pendingReward
+    }
+  }
+`;
+
+export const GET_PAIR_RANKING_INFO = gql`
+  query GetPairRankings(
+    $size: Int
+    $page: Int
+    $sortBy: String
+    $sortDirection: SortDirection
+    $coin: String
+  ) {
+    getPairRankings(
+      size: $size
+      page: $page
+      sortBy: $sortBy
+      sortDirection: $sortDirection
+      coin: $coin
+    ) {
+      items {
+        reserveX
+        reserveY
+        stats {
+          volume7D
+          volume24H
+          transaction24H
+          totalLiquidityInUSD
+          totalLiquidity
+          fee24H
+          aprPerformance7D
+        }
+        lpType
+        lpObjectId
+        lpName
+        explorerUrl
+        createdBy
+        createdAtTimestamp
+        coinY
+        coinX
+      }
+      page
+      size
+      total
     }
   }
 `;

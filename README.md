@@ -31,11 +31,20 @@ let address: string = "..." //optional: user address
 let listGenesisX: IGenesisPoolsData[] = await getGenesisFarm(address)
 ```
 
-### 3. Retrieve list farm FaaS and user position
+### 3. Retrieve list farm FaaS v1 and user position  - DEPRECATED
 
 ```
 import {getFaas} from "@flowx-pkg/ts-sdk"
 
 let address: string = "..." //optional: user address
-let listFaaS: IFaasData[] = await getFaas(address,)
+let listFaaS: IFaasData[] = await getFaas(address)
+```
+
+### 3. Retrieve list farm FaaS v2 and user position
+
+```
+import {getFaas} from "@flowx-pkg/ts-sdk"
+
+let address: string = "..." //optional: user address
+let listFaaS: IFaasV2[] = await getFaasV2(address)
 ```
