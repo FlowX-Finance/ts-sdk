@@ -432,12 +432,12 @@ export const getFaasV2 = async (account?: string): Promise<IFaasV2[]> => {
           isLegacy: false,
           lpPrice,
           poolLiquid: {
-            poolObjectId: poolInfos[i].objectId,
-            reserveX: poolInfos[i].coinX,
-            reserveY: poolInfos[i].coinY,
-            totalLpSupply: poolInfos[i].totalLpSupply,
-            lpType: poolInfos[i].lpType,
-            feeRate: poolInfos[i].feeRate,
+            poolObjectId: poolInfos[idxPool].objectId,
+            reserveX: poolInfos[idxPool].reserveX.fields.balance,
+            reserveY: poolInfos[idxPool].reserveY.fields.balance,
+            totalLpSupply: poolInfos[idxPool].totalLpSupply,
+            lpType: poolInfos[idxPool].lpType,
+            feeRate: poolInfos[idxPool].feeRate,
           },
         });
       }
