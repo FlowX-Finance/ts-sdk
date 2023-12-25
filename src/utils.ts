@@ -320,7 +320,7 @@ export const getPools = async (): Promise<IPools[]> => {
 export const getCoinsFlowX = async (): Promise<any> => {
   try {
     const res: any = await client.request(COIN_SETTING_QUERY, {
-      limit: 100,
+      size: 999999,
     });
     const listData: CoinMetadata[] = res.getCoinsSettings.items;
     return listData;
