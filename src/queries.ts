@@ -108,3 +108,36 @@ export const GET_PAIR_RANKING_INFO = gql`
     }
   }
 `;
+export const getSplitSmartRouteQuery = gql`
+  query GetSplitSmartRoute(
+    $coinTypeIn: String!
+    $coinTypeOut: String!
+    $amountIn: String!
+  ) {
+    getSplitSmartRoute(
+      coinTypeIn: $coinTypeIn
+      coinTypeOut: $coinTypeOut
+      amountIn: $amountIn
+    ) {
+      path {
+        routes {
+          coinY {
+            coinType
+          }
+          coinX {
+            coinType
+          }
+          pairId
+          protocol
+          fee
+          pairType
+        }
+        amountIn
+        amountOut
+        coinTypeOut
+        coinTypeIn
+      }
+      rate
+    }
+  }
+`;

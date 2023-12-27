@@ -3,17 +3,17 @@ import { Connection, JsonRpcProvider } from "@mysten/sui.js";
 import { GraphQLClient } from "graphql-request";
 
 export const client = new GraphQLClient(
-  "https://api.flowx.finance/flowx-be/graphql"
+  "https://flowx-dev.flowx.finance/flowx-be/graphql"
 );
 
 export const provider = new JsonRpcProvider(
-  new Connection({ fullnode: "https://fullnode.mainnet.sui.io/" })
+  new Connection({ fullnode: "https://explorer-rpc.testnet.sui.io/" })
 );
 
 export const MAX_ROUTE_HOPS = 4;
 export const MAX_LIMIT_PER_RPC_CALL = 50;
 export const LP_DECIMAL = 9;
-export const FLX_DECIMAL = 9;
+export const FLX_DECIMAL = 8;
 export const XFLX_DECIMAL = 8;
 export const DEFAULT_GAS_BUDGET = 10000;
 export const SUI_TYPE = "0x2::sui::SUI";
@@ -49,9 +49,9 @@ export const FAAS_POOL_REGISTRY_DYNAMIC_FIELD_V2 =
   "0x5c38d069b2f208b0894078465a31b5beb425104894f3237195c90666a82753a2";
 export const FAAS_FARM_TYPE_V2 = `${FAAS_PACKAGE_OBJECT_V2}::position::Position`;
 export const CONTAINER_OBJECT_ID =
-  "0xb65dcbf63fd3ad5d0ebfbf334780dc9f785eff38a4459e37ab08fa79576ee511";
+  "0xcbca62dbd54d3a8545f27a298872b1af9363a82a04a329504b1f0fef0a5f9ce4";
 export const PACKAGE_OBJECT_ID =
-  "0xba153169476e8c3114962261d1edc70de5ad9781b83cc617ecc8c1923191cae0";
+  "0xebebb67fc6fc6a74be5e57d90563c709631b4da86091c0926db81894add36ed3";
 export const FUNCTION = {
   SWAP_EXACT_OUTPUT: "swap_exact_output",
   SWAP_EXACT_INPUT: "swap_exact_input",

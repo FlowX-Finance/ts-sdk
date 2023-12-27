@@ -3,10 +3,12 @@ import {
   PaginatedObjectsResponse,
   SuiObjectDataFilter,
   SuiObjectDataOptions,
+  SuiObjectResponse,
   TransactionBlock,
   getPureSerializationType,
 } from "@mysten/sui.js";
 import {
+  FUNCTION,
   LP_DECIMAL,
   MAX_LIMIT_PER_RPC_CALL,
   SUI_FULL_TYPE,
@@ -22,6 +24,8 @@ import {
   IPairsRankingItem,
   IPoolInfo,
   IPools,
+  PairSetting,
+  PoolInfo,
 } from "./types";
 import Lodash from "./lodash";
 import {
@@ -301,26 +305,39 @@ export const getPoolInfos = async (
     throw e;
   }
 };
-export const getPools = async (): Promise<IPools[]> => {
+export const getPairs = async (): Promise<PairSetting[]> => {
   try {
     const res: any = await client.request(GET_PAIRS, {
       size: 100,
     });
-    const pairs = res.getPairs;
-    const pairObjectIds = pairs?.map((item) => item.lpObjectId);
-    const poolInfo = await getPoolInfos(pairObjectIds);
-    return poolInfo.map((item: any, i: number) => ({
-      ...pairs[i],
-      ...item,
-    }));
+    return res.getPairs;
   } catch (error) {
     throw error;
   }
 };
-export const getCoinsFlowX = async (): Promise<any> => {
+export const getPools = async (): Promise<{
+  poolInfos: IPools[];
+  pairs: PairSetting[];
+}> => {
+  try {
+    const pairs = await getPairs();
+    const pairObjectIds = pairs?.map((item) => item.lpObjectId);
+    const poolInfo = await getPoolInfos(pairObjectIds);
+    return {
+      poolInfos: poolInfo.map((item: any, i: number) => ({
+        ...pairs[i],
+        ...item,
+      })),
+      pairs,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+export const getCoinsFlowX = async (): Promise<CoinMetadata[]> => {
   try {
     const res: any = await client.request(COIN_SETTING_QUERY, {
-      size: 999999,
+      limit: 9999,
     });
     const listData: CoinMetadata[] = res.getCoinsSettings.items;
     return listData;
@@ -341,6 +358,26 @@ export const getCoinsBalance = async (
   });
   return Lodash.sortBy(balancesFormatted, ["type", "balance"]);
 };
+
+export const getAllCoinsWithBalance = async (
+  address: string
+): Promise<{ coins: CoinMetadata[]; coinBalances: ICoinBalance[] }> => {
+  try {
+    const [coins, coinBalances] = await Promise.all([
+      getCoinsFlowX(),
+      getCoinsBalance(address),
+    ]);
+    let filterListCoinBalance: ICoinBalance[] = [];
+    for (let i = 0; i < coinBalances.length; i++) {
+      if (coins.findIndex((item) => item.type === coinBalances[i].type) > -1) {
+        filterListCoinBalance.push(coinBalances[i]);
+      }
+    }
+    return { coins, coinBalances: filterListCoinBalance };
+  } catch (error) {
+    throw error;
+  }
+};
 export const getBasicData = async (
   address?: string
 ): Promise<{
@@ -351,7 +388,7 @@ export const getBasicData = async (
   const [coins, coinBalances, poolInfos] = await Promise.all([
     getCoinsFlowX(),
     getCoinsBalance(address),
-    getPools(),
+    (await getPools()).poolInfos,
   ]);
   return {
     coins,
@@ -387,7 +424,6 @@ export const initTxBlock = async (
         ? tx.pure(param)
         : tx.object(param);
     }) ?? [];
-
   tx.moveCall({
     target: `${packageId}::${moduleName}::${functionName}`,
     typeArguments: types ?? [],
@@ -412,4 +448,84 @@ export const getPairsRankingFlowX = async (): Promise<any> => {
   } catch (error) {
     throw error;
   }
+};
+export const getMultipleObjectIds = async (
+  lpObjectIds: string[]
+): Promise<SuiObjectResponse[]> => {
+  const splitObjectIds = [];
+  //split array if array is more than 50 elements because
+  for (let i = 0; i < lpObjectIds.length; i += 49) {
+    splitObjectIds.push(lpObjectIds.slice(i, i + 49));
+  }
+  const splitContentInfos = await Promise.all(
+    //50 ids maximum
+    splitObjectIds.map((items) =>
+      provider.multiGetObjects({ ids: items, options: { showContent: true } })
+    )
+  );
+  return Lodash.flatten(splitContentInfos);
+};
+export const extractPair = (type: string): string[] => {
+  const coinData = type
+    .slice(type.indexOf("<") + 1, type.lastIndexOf(">"))
+    .split(", ");
+  return [coinData[coinData.length - 2], coinData[coinData.length - 1]];
+};
+export const orderByKey = (
+  array: any[],
+  key: string,
+  sortBy: "desc" | "asc"
+) => {
+  if (!array?.length) {
+    return;
+  }
+  let swapped;
+  const compareFunctionName =
+    sortBy === "desc" ? "isLessThan" : "isGreaterThan";
+  do {
+    swapped = false;
+    for (let i = 0; i < array.length - 1; i++) {
+      if (
+        BigNumberInstance(array[i][key])[compareFunctionName](array[i + 1][key])
+      ) {
+        let temp = array[i];
+        array[i] = array[i + 1];
+        array[i + 1] = temp;
+        swapped = true;
+      }
+    }
+  } while (swapped);
+  return array;
+};
+export const estimateDealine = () => {
+  const time = "20";
+  const currentDate = new Date().getTime();
+  return +BigNumberInstance(currentDate).plus(+time * 60_000);
+};
+
+export const getAmountOut = (
+  amountIn: string | number,
+  reserveIn: string,
+  reserveOut: string,
+  fee: number
+): string => {
+  const amountWithFee = BigNumberInstance(amountIn).multipliedBy(1 - fee);
+  const numerator = amountWithFee.multipliedBy(reserveOut);
+  const denominator = amountWithFee.plus(reserveIn);
+
+  return numerator.dividedBy(denominator).toFixed(0);
+};
+
+export const getReserveByCoinType = (coinX: string, pairSetting: PoolInfo) => {
+  if (coinX === pairSetting.coinX) {
+    return {
+      reserveX: pairSetting.reserveX?.fields?.balance || "0",
+      reserveY: pairSetting.reserveY?.fields?.balance || "0",
+    };
+  }
+
+  return {
+    reserveX: pairSetting.reserveY?.fields?.balance || "0",
+    reserveY: pairSetting.reserveX?.fields?.balance || "0",
+  };
 };

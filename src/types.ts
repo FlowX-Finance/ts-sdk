@@ -1,3 +1,6 @@
+import { TransactionBlock } from "@mysten/sui.js";
+import BigNumber from "bignumber.js";
+
 export interface PairStats {
   volume7D: number | string;
   volume24H: number | string;
@@ -35,9 +38,9 @@ export interface CoinMetadata {
   decimals?: number;
   description?: string;
   iconUrl?: string;
-  type: string;
+  type?: string;
   isVerified?: boolean;
-  symbol: string;
+  symbol?: string;
   balance?: number | string;
   derivedSUI?: number | string;
   derivedPriceInUSD?: number | string;
@@ -180,4 +183,84 @@ export interface IFaasV2 {
   isLegacy: boolean;
   lpPrice: string;
   poolLiquid: IPoolInfo;
+}
+export class Coin {
+  coinType: string;
+}
+export type Amount = {
+  amount: number | string;
+  decimalAmount: number | string;
+};
+export class Route {
+  protocol?: string;
+  lpObjectId?: string;
+  pairId?: string;
+  pairType?: string;
+  fee?: number;
+  coinX?: Coin;
+  coinY?: Coin;
+  reserveX?: number;
+  reserveY?: number;
+  amountIn?: BigNumber;
+  amountOut?: BigNumber;
+}
+export interface GetSplitSmartRoute {
+  path: {
+    routes: Route[];
+    amountIn: string;
+    amountOut: string;
+    coinTypeOut: string;
+    coinTypeIn: string;
+  };
+  rate: number;
+}
+export interface PairSetting {
+  _id?: string;
+  coinXType: string;
+  coinYType: string;
+  createdBy?: string;
+  createdAt?: string;
+  isNewPair?: boolean;
+  lpType?: string;
+  lpName?: string;
+  userLpBalance?: string;
+  reserveX?: string;
+  reserveY?: string;
+  lpObjectId?: string;
+  inRate?: string;
+  outRate?: string;
+  stats?: PairStats;
+}
+export type PoolInfo = {
+  objectId?: string;
+  reserveX?: Reserve;
+  reserveY?: Reserve;
+  totalLpSupply?: string;
+  coinX?: string;
+  coinY?: string;
+  lpType?: string;
+  feeRate?: number;
+};
+export type SmartRoute = {
+  amountIn?: string | number;
+  amountOut?: string | number;
+  routes?: {
+    coinTypeIn?: string;
+    coinTypeOut?: string;
+    amountIn?: string | number;
+    amountOut?: string | number;
+    pair?: PairSetting;
+  }[];
+};
+export interface SwapArgs {
+  typeArguments: string[];
+  args: any[];
+  tx: TransactionBlock;
+  callFunction: string;
+}
+export interface ICalcAmountExact {
+  amountIn: Amount;
+  amountOut: Amount;
+  trades: PairSetting[];
+  smartRoute: SmartRoute;
 }
