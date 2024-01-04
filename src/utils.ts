@@ -337,7 +337,7 @@ export const getPools = async (): Promise<{
 export const getCoinsFlowX = async (): Promise<CoinMetadata[]> => {
   try {
     const res: any = await client.request(COIN_SETTING_QUERY, {
-      limit: 9999,
+      size: 9999,
     });
     const listData: CoinMetadata[] = res.getCoinsSettings.items;
     return listData;
