@@ -175,6 +175,7 @@ export interface IFaasV2 {
   ended_at_ms: string | number;
   creator: string;
   totalLiquid: string | number;
+  totalLiquidDecimal: string | number;
   totalLpDeposit: string;
   rewardApr: string;
   tradingApr: string;

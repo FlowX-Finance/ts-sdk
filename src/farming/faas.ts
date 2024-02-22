@@ -236,10 +236,10 @@ export const getFaasV2 = async (account?: string): Promise<IFaasV2[]> => {
           (item: any) => item.lpType === trueType
         );
         const coinX = coins.find(
-          (coin) => coin.type === poolInfos[idxPool].coinX
+          (coin) => coin.type === poolInfos[idxPool]?.coinX
         );
         const coinY = coins.find(
-          (coin) => coin.type === poolInfos[idxPool].coinY
+          (coin) => coin.type === poolInfos[idxPool]?.coinY
         );
         let lpPrice = "0";
         if (idxPool > -1) {
@@ -419,6 +419,10 @@ export const getFaasV2 = async (account?: string): Promise<IFaasV2[]> => {
             +totalLp > 0 && +lpPrice > 0
               ? +BigNumberInstance(totalLp).multipliedBy(lpPrice)
               : 0,
+          totalLiquidDecimal:
+            +totalLp > 0 && +lpPrice > 0
+              ? +BigNumberInstance(totalLp)
+              : 0,
           totalLpDeposit: accountStaked
             ? +getBalanceAmount(
                 ((accountStaked as any)?.data.content as any)?.fields?.amount,
@@ -432,12 +436,12 @@ export const getFaasV2 = async (account?: string): Promise<IFaasV2[]> => {
           isLegacy: false,
           lpPrice,
           poolLiquid: {
-            poolObjectId: poolInfos[idxPool].objectId,
-            reserveX: poolInfos[idxPool].reserveX.fields.balance,
-            reserveY: poolInfos[idxPool].reserveY.fields.balance,
-            totalLpSupply: poolInfos[idxPool].totalLpSupply,
-            lpType: poolInfos[idxPool].lpType,
-            feeRate: poolInfos[idxPool].feeRate,
+            poolObjectId: poolInfos[idxPool]?.objectId,
+            reserveX: poolInfos[idxPool]?.reserveX.fields.balance,
+            reserveY: poolInfos[idxPool]?.reserveY.fields.balance,
+            totalLpSupply: poolInfos[idxPool]?.totalLpSupply,
+            lpType: poolInfos[idxPool]?.lpType,
+            feeRate: poolInfos[idxPool]?.feeRate,
           },
         });
       }
