@@ -1,3 +1,5 @@
+import { MAX_ROUTE_HOPS } from "../../constants";
+
 class Graph {
   private graph: Record<string, string[]> = {};
 
@@ -26,12 +28,14 @@ class Graph {
     visited.add(node);
     currentPath.push(node);
 
-    if (node === end) {
-      allPaths.push([...currentPath]);
-    } else {
-      for (const neighbor of this.graph[node] ?? []) {
-        if (!visited.has(neighbor)) {
-          this.dfs(neighbor, end, visited, currentPath, allPaths);
+    if (currentPath.length <= MAX_ROUTE_HOPS) {
+      if (node === end) {
+        allPaths.push([...currentPath]);
+      } else {
+        for (const neighbor of this.graph[node] ?? []) {
+          if (!visited.has(neighbor)) {
+            this.dfs(neighbor, end, visited, currentPath, allPaths);
+          }
         }
       }
     }
