@@ -1,8 +1,16 @@
-import { Amount, CoinMetadata, ICalcAmountExact, PairSetting } from "../types";
+import {
+  Amount,
+  CoinMetadata,
+  ICalcAmountExact,
+  IGetPools,
+  IPools,
+  PairSetting,
+} from "../types";
 import {
   getBalanceAmount,
   getCoinsFlowX,
   getDecimalAmount,
+  getPairs,
   getPools,
 } from "../utils";
 import { BigNumberInstance } from "../BigNumber";
@@ -10,14 +18,23 @@ import { getSmartRoute } from "./getSmartRoute";
 import { calculateAmountOutFromPath } from "./libs/calculateAmountOutFromPath";
 import { calculateAmountInFromPath } from "./libs/calculateAmountInFromPath";
 
-//User input exact amount of in token
-export const calculateAmountOut = async (
+export const handleCalcAmountOut = async (
   value: string | number,
   coinIn: CoinMetadata,
-  coinOut: CoinMetadata
+  coinOut: CoinMetadata,
+  coinsData?: CoinMetadata[],
+  pairsData?: PairSetting[],
+  poolInfosData?: IPools[]
 ): Promise<ICalcAmountExact> => {
-  const { poolInfos } = await getPools();
-  const coins: CoinMetadata[] = await getCoinsFlowX();
+  const coins = coinsData ?? (await getCoinsFlowX());
+  let pairs = pairsData,
+    poolInfos = poolInfosData;
+  if (!poolInfosData || !pairsData) {
+    const { poolInfos: poolData, pairs: pairData } = await getPools();
+    pairs = pairData;
+    poolInfos = poolData;
+  }
+
   let decimalInAmount = BigNumberInstance(
     getDecimalAmount(value, coinIn.decimals)
   ).toFixed(0);
@@ -35,7 +52,9 @@ export const calculateAmountOut = async (
     decimalInAmount,
     coinIn.type,
     coinOut.type,
-    true
+    true,
+    poolInfos,
+    pairs
   );
 
   const smartRoute = calculateAmountOutFromPath(
@@ -63,14 +82,23 @@ export const calculateAmountOut = async (
   };
 };
 
-//User input exact amount of out token
-export const calculateAmountIn = async (
+export const handleCalcAmountIn = async (
   value: string | number,
   coinIn: CoinMetadata,
-  coinOut: CoinMetadata
+  coinOut: CoinMetadata,
+  coinsData?: CoinMetadata[],
+  pairsData?: PairSetting[],
+  poolInfosData?: IPools[]
 ): Promise<ICalcAmountExact> => {
-  const { poolInfos } = await getPools();
-  const coins: CoinMetadata[] = await getCoinsFlowX();
+  const coins = coinsData ?? (await getCoinsFlowX());
+  let pairs = pairsData,
+    poolInfos = poolInfosData;
+  if (!poolInfosData || !pairsData) {
+    const { poolInfos: poolData, pairs: pairData } = await getPools();
+    pairs = pairData;
+    poolInfos = poolData;
+  }
+
   let decimalOutAmount = BigNumberInstance(
     getDecimalAmount(value, coinOut.decimals)
   ).toFixed(0);
@@ -86,7 +114,9 @@ export const calculateAmountIn = async (
     decimalOutAmount,
     coinIn.type,
     coinOut.type,
-    false
+    false,
+    poolInfos,
+    pairs
   );
   const smartRoute = calculateAmountInFromPath(
     decimalOutAmount,
@@ -107,6 +137,50 @@ export const calculateAmountIn = async (
   return {
     amountIn: amountInNewState,
     amountOut: amountOutNewState,
+    trades,
+    smartRoute,
+  };
+};
+//User input exact amount of in token
+export const calculateAmountOut = async (
+  value: string | number,
+  coinIn: CoinMetadata,
+  coinOut: CoinMetadata
+): Promise<ICalcAmountExact> => {
+  const { poolInfos } = await getPools();
+  const coins: CoinMetadata[] = await getCoinsFlowX();
+  const pairs: PairSetting[] = await getPairs();
+  const { amountIn, amountOut, trades, smartRoute } = await handleCalcAmountOut(
+    value,
+    coinIn,
+    coinOut,
+    coins,
+    pairs,
+    poolInfos
+  );
+  return { amountIn, amountOut, trades, smartRoute };
+};
+
+//User input exact amount of out token
+export const calculateAmountIn = async (
+  value: string | number,
+  coinIn: CoinMetadata,
+  coinOut: CoinMetadata
+): Promise<ICalcAmountExact> => {
+  const { poolInfos } = await getPools();
+  const coins: CoinMetadata[] = await getCoinsFlowX();
+  const pairs: PairSetting[] = await getPairs();
+  const { amountIn, amountOut, trades, smartRoute } = await handleCalcAmountIn(
+    value,
+    coinIn,
+    coinOut,
+    coins,
+    pairs,
+    poolInfos
+  );
+  return {
+    amountIn,
+    amountOut,
     trades,
     smartRoute,
   };

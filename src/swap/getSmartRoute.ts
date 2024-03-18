@@ -1,7 +1,7 @@
 import { BigNumberInstance } from "../BigNumber";
 import { MAX_ROUTE_HOPS, client } from "../constants";
-import { PairSetting, PoolInfo } from "../types";
-import { getPools } from "../utils";
+import { IPools, PairSetting, PoolInfo } from "../types";
+import { getPairs, getPools } from "../utils";
 import Graph from "./libs/Graph";
 import { calculateAmountInFromPath } from "./libs/calculateAmountInFromPath";
 import { calculateAmountOutFromPath } from "./libs/calculateAmountOutFromPath";
@@ -120,19 +120,24 @@ export const getSmartRoute = async (
   amount: string | number,
   coinInType: string,
   coinOutType: string,
-  isExactIn: boolean
+  isExactIn: boolean,
+  poolInfosData?: IPools[],
+  pairsData?: PairSetting[]
 ): Promise<PairSetting[]> => {
-  const { poolInfos, pairs } = await getPools();
+  let pairs = pairsData,
+    poolInfos = poolInfosData;
+  if (!poolInfosData || !pairsData) {
+    const { poolInfos: poolData, pairs: pairData } = await getPools();
+    pairs = pairData;
+    poolInfos = poolData;
+  }
 
   let tradAbles = getTradAbles(coinInType, coinOutType, pairs);
-
   const directTrade = getTrades(coinInType, coinOutType, pairs);
-
   //return directTrade if do not have multi routers
   // if (!tradAbles.length) {
   //   return directTrade ? [directTrade] : [];
   // }
-
   if (isExactIn) {
     return getBestRouterExactIn(
       amount,

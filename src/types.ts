@@ -265,3 +265,7 @@ export interface ICalcAmountExact {
   trades: PairSetting[];
   smartRoute: SmartRoute;
 }
+export interface IGetPools {
+  poolInfos: IPools[];
+  pairs: PairSetting[];
+}

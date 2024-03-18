@@ -21,6 +21,7 @@ import {
   CoinMetadata,
   ICoinBalance,
   IGetLpPrice,
+  IGetPools,
   IPairsRankingItem,
   IPoolInfo,
   IPools,
@@ -315,10 +316,7 @@ export const getPairs = async (): Promise<PairSetting[]> => {
     throw error;
   }
 };
-export const getPools = async (): Promise<{
-  poolInfos: IPools[];
-  pairs: PairSetting[];
-}> => {
+export const getPools = async (): Promise<IGetPools> => {
   try {
     const pairs = await getPairs();
     const pairObjectIds = pairs?.map((item) => item.lpObjectId);
