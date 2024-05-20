@@ -35,15 +35,15 @@ export interface CoinStats {
   fee24H: number | string;
 }
 export interface CoinMetadata {
-  decimals?: number;
+  type: string;
+  decimals: number;
   description?: string;
   iconUrl?: string;
-  type?: string;
   isVerified?: boolean;
   symbol?: string;
-  balance?: number | string;
-  derivedSUI?: number | string;
-  derivedPriceInUSD?: number | string;
+  balance?: string;
+  derivedSUI?: string;
+  derivedPriceInUSD?: string;
   name?: string;
   id?: string;
   stats?: CoinStats;
@@ -51,9 +51,10 @@ export interface CoinMetadata {
   websiteUrl?: string;
   coinMarketcapUrl?: string;
   coingeckoUrl?: string;
+  __typename?: string;
 }
 export interface ICoinBalance {
-  balance: number;
+  balance: string;
   type: string;
 }
 export type Reserve = {
@@ -192,19 +193,6 @@ export type Amount = {
   amount: number | string;
   decimalAmount: number | string;
 };
-export class Route {
-  protocol?: string;
-  lpObjectId?: string;
-  pairId?: string;
-  pairType?: string;
-  fee?: number;
-  coinX?: Coin;
-  coinY?: Coin;
-  reserveX?: number;
-  reserveY?: number;
-  amountIn?: BigNumber;
-  amountOut?: BigNumber;
-}
 export interface GetSplitSmartRoute {
   path: {
     routes: Route[];
@@ -241,6 +229,7 @@ export type PoolInfo = {
   coinY?: string;
   lpType?: string;
   feeRate?: number;
+  kLast?: string;
 };
 export type SmartRoute = {
   amountIn?: string | number;
@@ -269,3 +258,57 @@ export interface IGetPools {
   poolInfos: IPools[];
   pairs: PairSetting[];
 }
+
+export class Route {
+  protocol?: string;
+  lpObjectId?: string;
+  pairId?: string;
+  pairType?: string;
+  fee?: number;
+  coinX?: Coin;
+  coinY?: Coin;
+  reserveX?: number;
+  reserveY?: number;
+  amountIn?: BigNumber;
+  amountOut?: BigNumber;
+  //V3
+  poolId?: string;
+  sourceType?: string;
+  sqrtPrice?: string;
+  liquidity?: string;
+  tickIndex?: string;
+  swapXtoY?: boolean;
+  lpType?: string;
+}
+export interface ISmartPathV3 {
+  info: {
+    routes: Route[];
+    amountIn: BigNumber;
+    amountOut: BigNumber;
+    coinTypeOut: string;
+    coinTypeIn: string;
+  };
+  rate: number;
+}
+export interface ISmartRouting {
+  paths: ISmartPathV3[];
+  amountOut: string;
+}
+export interface ITradeRateItem {
+  coinInType: string;
+  coinOutType: string;
+  outRate: string;
+  inRate: string;
+}
+export interface IEstimateGasResult {
+  fee: string;
+  amountOut: string;
+  pathsAmountOut: string[];
+}
+export type TSourceSmartRouting =
+  | "FLOWX"
+  | "FLOWX_CLMM"
+  | "KRIYA"
+  | "TURBOS"
+  | "CETUS"
+  | "AFTERMATH";

@@ -16,7 +16,7 @@ import {
   client,
   provider,
 } from "./constants";
-import { BIG_TEN, BigNumberInstance } from "./BigNumber";
+import { BIG_TEN, BigNumber, BigNumberInstance } from "./BigNumber";
 import {
   CoinMetadata,
   ICoinBalance,
@@ -57,9 +57,9 @@ export const fetchOwnedObjects = async (
   objectType: string,
   jsonRpcProvider: JsonRpcProvider
 ) => {
-  let cursor;
-  let hasNextPage = false;
-  let objects = [];
+  let cursor = null,
+    hasNextPage = false,
+    objects = [];
   do {
     const res = await jsonRpcProvider.getOwnedObjects({
       owner,
@@ -194,14 +194,20 @@ export const calculateReceiveAmount = (
     ).toNumber();
   return { amountX, amountY };
 };
-export const standardizeType = (type: string) => {
+export const standardizeType = (type: string, fullTypeIfSui?: boolean) => {
   const OBJECT_ID_LENGTH = 64;
-  const REGEX_MOVE_OBJECT_ID = /0x[0-9a-fA-F]{1,64}/g;
+  const REGEX_MOVE_OBJECT_ID = /^(0x)?[0-9a-fA-F]{1,64}/g;
   let originalCoinX = null;
   originalCoinX = type?.replace(REGEX_MOVE_OBJECT_ID, (match: string) => {
-    return `0x${match.slice(2).padStart(OBJECT_ID_LENGTH, "0")}`;
+    return `0x${stripZeros(
+      match.replace("0x", "").padStart(OBJECT_ID_LENGTH, "0")
+    )}`;
   });
-  return type === SUI_TYPE ? SUI_TYPE : originalCoinX;
+  return type === SUI_FULL_TYPE && !fullTypeIfSui
+    ? SUI_TYPE
+    : originalCoinX === SUI_TYPE && fullTypeIfSui
+    ? SUI_FULL_TYPE
+    : originalCoinX;
 };
 export const getLpPrice = ({ poolInfo, coinX, coinY }: IGetLpPrice) => {
   const { amountX, amountY } = calculateReceiveAmount(poolInfo, coinX, coinY);
@@ -260,6 +266,7 @@ export const getFullyOwnedObjects = async (
 
   return data;
 };
+
 export const extractTypeFaas = (type: string) => {
   const pair = type.split("Pool<")[1];
   const coinXType = pair.split(", ")[0];
@@ -308,7 +315,7 @@ export const getPoolInfos = async (
 };
 export const getPairs = async (): Promise<PairSetting[]> => {
   try {
-    const res: any = await client.request(GET_PAIRS, {
+    const res: any = await client().request(GET_PAIRS, {
       size: 100,
     });
     return res.getPairs;
@@ -332,11 +339,16 @@ export const getPools = async (): Promise<IGetPools> => {
     throw error;
   }
 };
-export const getCoinsFlowX = async (): Promise<CoinMetadata[]> => {
+export const getCoinsFlowX = async (
+  coinsTypes?: string[],
+  signal?: any
+): Promise<CoinMetadata[]> => {
   try {
-    const res: any = await client.request(COIN_SETTING_QUERY, {
+    let variable: any = {
       size: 9999,
-    });
+    };
+    if (coinsTypes) variable.coinsType = coinsTypes;
+    const res: any = await client(signal).request(COIN_SETTING_QUERY, variable);
     const listData: CoinMetadata[] = res.getCoinsSettings.items;
     return listData;
   } catch (error) {
@@ -345,13 +357,13 @@ export const getCoinsFlowX = async (): Promise<CoinMetadata[]> => {
 };
 export const getCoinsBalance = async (
   address?: string
-): Promise<Array<{ balance: number; type: string }>> => {
+): Promise<ICoinBalance[]> => {
   if (!address) return [];
   const balances = await provider.getAllBalances({ owner: address });
   const balancesFormatted = balances.map((item) => {
     return {
       type: item.coinType,
-      balance: +item.totalBalance,
+      balance: BigNumber(item.totalBalance).toFixed(),
     };
   });
   return Lodash.sortBy(balancesFormatted, ["type", "balance"]);
@@ -437,7 +449,7 @@ export const initTxBlock = async (
 };
 export const getPairsRankingFlowX = async (): Promise<any> => {
   try {
-    const res: any = await client.request(GET_PAIR_RANKING_INFO, {
+    const res: any = await client().request(GET_PAIR_RANKING_INFO, {
       page: 1,
       size: 100,
     });
@@ -526,4 +538,36 @@ export const getReserveByCoinType = (coinX: string, pairSetting: PoolInfo) => {
     reserveX: pairSetting.reserveY?.fields?.balance || "0",
     reserveY: pairSetting.reserveX?.fields?.balance || "0",
   };
+};
+export const getFullyMultiObject = async (objectIds: string[]) => {
+  try {
+    let finalArr = [];
+    for (let i = 0; i < objectIds.length; i += 50) {
+      const data = objectIds.slice(i, i + 50);
+      const res = await provider.multiGetObjects({
+        ids: data,
+        options: { showContent: true },
+      });
+      finalArr.push(...res);
+    }
+    return finalArr;
+  } catch (error) {
+    console.log("getFullyMultiObject error", error);
+  }
+};
+export const getFullyDynamicFields = async (id: string) => {
+  let hasNextPage = false,
+    dynamicFieldObjects = [],
+    cursor: string = null;
+  do {
+    const res = await provider.getDynamicFields({
+      parentId: id,
+      cursor,
+      limit: 50,
+    });
+    hasNextPage = res.hasNextPage;
+    cursor = res.nextCursor;
+    dynamicFieldObjects.push(...res.data.map((item) => item));
+  } while (!!hasNextPage);
+  return dynamicFieldObjects;
 };

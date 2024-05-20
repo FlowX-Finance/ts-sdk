@@ -26,7 +26,7 @@ export const getAprPdrwPosition = async (
   posArr: string[]
 ): Promise<IAprPdrwposition[]> => {
   try {
-    const res: any = await client.request(GET_POSITION_APR_PDRW, {
+    const res: any = await client().request(GET_POSITION_APR_PDRW, {
       farmObjectId,
       objectIds: posArr,
     });

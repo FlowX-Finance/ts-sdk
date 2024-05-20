@@ -11,7 +11,7 @@ export const handleGetCoinAmount = async (
   inheritTx?: TransactionBlock
 ): Promise<{ tx: TransactionBlock; coin: string | TransactionArgument }> => {
   const tx = inheritTx ?? new TransactionBlock();
-  const bigintAmount = BigInt(BigNumberInstance(amount).toFixed(0));
+  const bigintAmount = BigNumberInstance(amount).toFixed(0);
   const { objectIds, balance, objectCoins } = await getCoinOjectIdsByAmount(
     account,
     bigintAmount,
@@ -28,9 +28,7 @@ export const handleGetCoinAmount = async (
       objectIds.slice(1).map((item) => tx.object(item))
     );
   }
-  const splitAmount = BigNumberInstance(balance)
-    .minus(bigintAmount.toString())
-    .toFixed();
+  const splitAmount = BigNumberInstance(balance).minus(bigintAmount).toFixed();
   if (BigNumberInstance(splitAmount).isGreaterThan(0)) {
     // split correct amount to swap
     const [coin] = tx.splitCoins(tx.object(coinObjectId), [

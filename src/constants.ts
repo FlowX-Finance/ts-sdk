@@ -1,10 +1,13 @@
-import BigNumber from "bignumber.js";
 import { Connection, JsonRpcProvider } from "@mysten/sui.js";
 import { GraphQLClient } from "graphql-request";
+import { BigNumber } from "./BigNumber";
 
-export const client = new GraphQLClient(
-  "https://api.flowx.finance/flowx-be/graphql"
-);
+// //MAINNET
+export const client = (signal?: any) => {
+  return new GraphQLClient("https://api.flowx.finance/flowx-be/graphql", {
+    signal,
+  });
+};
 
 export const provider = new JsonRpcProvider(
   new Connection({ fullnode: "https://fullnode.mainnet.sui.io/" })
@@ -19,7 +22,7 @@ export const DEFAULT_GAS_BUDGET = 10000;
 export const SUI_TYPE = "0x2::sui::SUI";
 export const SUI_FULL_TYPE =
   "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI";
-export const ZERO_BN = new BigNumber(0);
+export const ZERO_BN = BigNumber(0);
 
 export const GENESIS_FARM_OBJECT =
   "0x6be2e5847e91ca2f18de8cbd711367b87440e6a5ca99c63b1ea1d29d743c8212";
@@ -39,7 +42,7 @@ export const DYNAMIC_FAAS_POS_TYPE = `${FAAS_PACKAGE_OBJECT}::position_registry:
 export const POSITION_G_FARM_TYPE = `${GENESIS_FARM_OBJECT}::position::Position`;
 export const CLOCK_ID =
   "0x0000000000000000000000000000000000000000000000000000000000000006";
-export const FLX_TYPE = `0x6dae8ca14311574fdfe555524ea48558e3d1360d1607d1c7f98af867e3b7976c::flx::FLX`;
+export const FLX_TYPE = `0x52eb7d9251fc7567f0f2bbd831a9efc76fb6e2edeb613094f0c7a0f3d922169f::flx::FLX`;
 
 export const FAAS_PACKAGE_OBJECT_V2 =
   "0x943535499ac300765aa930072470e0b515cfd7eebcaa5c43762665eaad9cc6f2";
@@ -52,6 +55,22 @@ export const CONTAINER_OBJECT_ID =
   "0xb65dcbf63fd3ad5d0ebfbf334780dc9f785eff38a4459e37ab08fa79576ee511";
 export const PACKAGE_OBJECT_ID =
   "0xba153169476e8c3114962261d1edc70de5ad9781b83cc617ecc8c1923191cae0";
+export const SWAP_V3 = {
+  UNIVERSAL_ROUTER:
+    "0x567c4e6cfda46287d193ce23d44a0b912311f4daf957bb9362a4f289f023273f",
+  UNIVERSAL_TREASURY:
+    "0x9fe407e4b5c3e3aa747eb4580d8e607d0e1ce540bec1063785d0b47126c749cf",
+};
+export const ADD_LIQUIDITY_V3 = {
+  POOL_REGISTRY_OBJ:
+    "0x27565d24a4cd51127ac90e4074a841bbe356cca7bf5759ddc14a975be1632abc",
+  CLMM_PACKAGE:
+    "0x25929e7f29e0a30eb4e692952ba1b5b65a3a4d65ab5f2a32e1ba3edcb587f26d",
+  POSITION_REGISTRY_OBJ:
+    "0x7dffe3229d675645564273aa68c67406b6a80aa29e245ac78283acd7ed5e4912",
+  VERSIONED_OBJ:
+    "0x67624a1533b5aff5d0dfcf5e598684350efd38134d2d245f475524c03a64e656",
+};
 export const FUNCTION = {
   SWAP_EXACT_OUTPUT: "swap_exact_output",
   SWAP_EXACT_INPUT: "swap_exact_input",
@@ -67,4 +86,172 @@ export const FUNCTION = {
   SWAP_EXACT_TRIPLE_INPUT: "swap_exact_triple_input",
   SWAP_EXACT_QUADRUPLE_INPUT: "swap_exact_quadruple_input",
   SWAP_EXACT_QUINTUPLE_INPUT: "swap_exact_quintuple_input",
+  SETTLE_ROUTING_V3: "settle",
+  INIT_PATH: "initialize_path",
+  INIT_ROUTING: "initialize_routing",
+  NEXT_ROUTING_V3: "next",
+  FLOWX_SWAP: "flowx_swap_exact_input",
+  FLOWX_SWAP_CLMM: "flowx_clmm_swap_exact_input",
 };
+export const MODULE = {
+  UNIVERSAL_ROUTER: "universal_router",
+};
+
+/**
+ * The maximum tick index supported by the clmmpool program.
+ * @category Constants
+ */
+export const MAX_TICK_INDEX = 443636;
+/**
+ * The minimum tick index supported by the clmmpool program.
+ * @category Constants
+ */
+export const MIN_TICK_INDEX = -443636;
+/**
+ * The maximum sqrt-price supported by the clmmpool program.
+ * @category Constants
+ */
+export const MAX_SQRT_PRICE = "79226673515401279992447579055";
+/**
+ * The number of initialized ticks that a tick-array account can hold.
+ * @category Constants
+ */
+export const TICK_ARRAY_SIZE = 64;
+/**
+ * The minimum sqrt-price supported by the clmmpool program.
+ * @category Constants
+ */
+export const MIN_SQRT_PRICE = "4295048016";
+/**
+ * The denominator which the fee rate is divided on.
+ * @category Constants
+ */
+export const FEE_RATE_DENOMINATOR = BigNumber(1_000_000);
+
+// TESTNET;
+// import BigNumber from "bignumber.js";
+// import { Connection, JsonRpcProvider } from "@mysten/sui.js";
+// import { GraphQLClient } from "graphql-request";
+
+// export const client = new GraphQLClient(
+//   "https://flowx-dev.flowx.finance/flowx-be/graphql"
+// );
+
+// export const provider = new JsonRpcProvider(
+//   new Connection({ fullnode: "https://fullnode.testnet.sui.io:443" })
+// );
+
+// export const MAX_ROUTE_HOPS = 4;
+// export const MAX_LIMIT_PER_RPC_CALL = 50;
+// export const LP_DECIMAL = 9;
+// export const FLX_DECIMAL = 8;
+// export const XFLX_DECIMAL = 8;
+// export const DEFAULT_GAS_BUDGET = 10000;
+// export const SUI_TYPE = "0x2::sui::SUI";
+// export const SUI_FULL_TYPE =
+//   "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI";
+// export const ZERO_BN = new BigNumber(0);
+
+// export const GENESIS_FARM_INFO =
+//   "0x035e105129ab5b2630205c0c7b379344ce397a9e2503e164c8f0203c396840aa";
+// export const GENESIS_FARM_INFO_DYNAMIC_FIELD_ID =
+//   "0xe8d71093fdc05e71953b785f0f4dc73d9d8e21ebbc55cca342e963fefcc5668b";
+// export const FAAS_PACKAGE_OBJECT =
+//   "0x368d0aff8f837a623b0c8627368adbb300e852298946eb41f0a54bf0ad8fac2e";
+// export const FAAS_STATE_OBJECT =
+//   "0xdddeb06c0b6f077991da1359f6249f092573b06af44463922247ca93d9a499a9";
+// export const FAAS_POOL_REGISTRY_DYNAMIC_FIELD =
+//   "0xaa3f27fc7257fc130676b820572f6b9bf2253c01897f9ce87bc937ba9e70f329";
+// export const FAAS_POSITION_REGISTRY_DYNAMIC_FIELD =
+//   "0x9a7c8bfe99950846e863400cd88ad0d2f017f40a412dc75f39f94c702f284980";
+// export const DYNAMIC_FAAS_POS_TYPE = `${FAAS_PACKAGE_OBJECT}::position_registry::Key`;
+// export const POSITION_G_FARM_TYPE = `0x71d7e29a0fb2b8b2dd1998b5cad766002477a4a66c39e60ec2a9df508cb1e24b::position::Position`;
+// export const CLOCK_ID =
+//   "0x0000000000000000000000000000000000000000000000000000000000000006";
+// export const FLX_TYPE = `0x52eb7d9251fc7567f0f2bbd831a9efc76fb6e2edeb613094f0c7a0f3d922169f::flx::FLX`;
+
+// export const FAAS_PACKAGE_OBJECT_V2 =
+//   "0xd219d9d3345eb2ec779e8c6faed9259f75e2aa879ea52da670366072fa5a46a7";
+// export const FAAS_STATE_OBJECT_V2 =
+//   "0xfdc78b91296494f64fee04031e0615e496b1f92b9e7e68b328d159836eb8b1fb";
+// export const FAAS_POOL_REGISTRY_DYNAMIC_FIELD_V2 =
+//   "0x189462a405393ed2ae6499647ba206590b3bf7ea152381812c2bd33e232a3451";
+// export const FAAS_FARM_TYPE_V2 = `${FAAS_PACKAGE_OBJECT_V2}::position::Position`;
+// export const CONTAINER_OBJECT_ID =
+//   "0xcbca62dbd54d3a8545f27a298872b1af9363a82a04a329504b1f0fef0a5f9ce4";
+// export const PACKAGE_OBJECT_ID =
+//   "0xebebb67fc6fc6a74be5e57d90563c709631b4da86091c0926db81894add36ed3";
+// export const UNIVERSAL_ROUTER =
+//   "0xe1d359446beafcde25b78d98464775d7d40a2b6bdbcd66d9efa988e7ef364d21";
+// export const SWAP_V3 = {
+//   UNIVERSAL_ROUTER:
+//     "0x4005b8c05bf514bf18a6c9109d2629d419c0cd21ae08237d9df08090336b1d80", // TODO: still testnet cofnig, remove todo when replace with mainnet config
+//   UNIVERSAL_TREASURY:
+//     "0x0d41cf814ab9776c4948b4eb9e919eae352121038fab2993588bcfb5308a6d24", // TODO: still testnet cofnig, remove todo when replace with mainnet config
+// };
+// export const ADD_LIQUIDITY_V3 = {
+//   POOL_REGISTRY_OBJ:
+//     "0x1f5e3658f83800e5aa61c282fbd730fef3b0d56f1ba1ecbba85aa39187619dd0", // TODO: still testnet cofnig, remove todo when replace with mainnet config
+//   CLMM_PACKAGE:
+//     "0x0b7372b4c676fac88886b908469d4670785cfaf3faa66d29f716a741862fd65a", // TODO: still testnet cofnig, remove todo when replace with mainnet config
+//   POSITION_REGISTRY_OBJ:
+//     "0xa43f73524fdc19ef06eac9d1ca9a1b355c2a34dc66f74d418bab50753dc4f385", // TODO: still testnet cofnig, remove todo when replace with mainnet config
+//   VERSIONED_OBJ:
+//     "0x95a78371508658977045b03afa7fa6dd2ba0f474fb434c11339bc8a61d6e52cf", // TODO: still testnet cofnig, remove todo when replace with mainnet config
+// };
+
+// export const FUNCTION = {
+//   SWAP_EXACT_OUTPUT: "swap_exact_output",
+//   SWAP_EXACT_INPUT: "swap_exact_input",
+//   SWAP_EXACT_INPUT_DOUBLEHOP: "swap_exact_input_doublehop",
+//   SWAP_EXACT_OUTPUT_DOUBLEHOP: "swap_exact_output_doublehop",
+//   SWAP_EXACT_INPUT_TRIPLEHOP: "swap_exact_input_triplehop",
+//   SWAP_EXACT_OUTPUT_TRIPLEHOP: "swap_exact_output_triplehop",
+//   SWAP_EXACT_INPUT_DOUBLE_OUTPUT: "swap_exact_input_double_output",
+//   SWAP_EXACT_INPUT_TRIPLE_OUTPUT: "swap_exact_input_triple_output",
+//   SWAP_EXACT_INPUT_QUADRUPLE_OUTPUT: "swap_exact_input_quadruple_output",
+//   SWAP_EXACT_INPUT_QUINTUPLE_OUTPUT: "swap_exact_input_quintuple_output",
+//   SWAP_EXACT_DOUBLE_INPUT: "swap_exact_double_input",
+//   SWAP_EXACT_TRIPLE_INPUT: "swap_exact_triple_input",
+//   SWAP_EXACT_QUADRUPLE_INPUT: "swap_exact_quadruple_input",
+//   SWAP_EXACT_QUINTUPLE_INPUT: "swap_exact_quintuple_input",
+//   SETTLE_ROUTING_V3: "settle",
+//   INIT_PATH: "initialize_path",
+//   INIT_ROUTING: "initialize_routing",
+//   NEXT_ROUTING_V3: "next",
+//   FLOWX_SWAP: "flowx_swap_exact_input",
+//   FLOWX_SWAP_CLMM: "flowx_clmm_swap_exact_input",
+// };
+// export const MODULE = {
+//   UNIVERSAL_ROUTER: "universal_router",
+// };
+// /**
+//  * The maximum tick index supported by the clmmpool program.
+//  * @category Constants
+//  */
+// export const MAX_TICK_INDEX = 443636;
+// /**
+//  * The minimum tick index supported by the clmmpool program.
+//  * @category Constants
+//  */
+// export const MIN_TICK_INDEX = -443636;
+// /**
+//  * The maximum sqrt-price supported by the clmmpool program.
+//  * @category Constants
+//  */
+// export const MAX_SQRT_PRICE = "79226673515401279992447579055";
+// /**
+//  * The number of initialized ticks that a tick-array account can hold.
+//  * @category Constants
+//  */
+// export const TICK_ARRAY_SIZE = 64;
+// /**
+//  * The minimum sqrt-price supported by the clmmpool program.
+//  * @category Constants
+//  */
+// export const MIN_SQRT_PRICE = "4295048016";
+// /**
+//  * The denominator which the fee rate is divided on.
+//  * @category Constants
+//  */
+// export const FEE_RATE_DENOMINATOR = BigNumber(1_000_000);

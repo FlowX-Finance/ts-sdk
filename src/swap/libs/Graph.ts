@@ -24,7 +24,13 @@ class Graph {
     return allPaths;
   }
 
-  private dfs(node: string, end: string, visited: Set<string>, currentPath: string[], allPaths: string[][]): void {
+  private dfs(
+    node: string,
+    end: string,
+    visited: Set<string>,
+    currentPath: string[],
+    allPaths: string[][]
+  ): void {
     visited.add(node);
     currentPath.push(node);
 

@@ -5,16 +5,26 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "pretty": true,
-    "types": ["mocha"],
+    "types": [
+      "mocha"
+    ],
     "sourceMap": true,
     "target": "es2018",
     "resolveJsonModule": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
-    "lib": ["es2018", "DOM", "esnext.asynciterable"],
+    "lib": [
+      "es2018",
+      "DOM",
+      "esnext.asynciterable"
+    ],
     "outDir": "dist"
   },
-  "include": ["./src"],
-  "exclude": ["node_modules/*"]
+  "include": [
+    "./src"
+  ],
+  "exclude": [
+    "node_modules/*"
+  ]
 }

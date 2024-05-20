@@ -5,7 +5,7 @@ import { BigNumberInstance } from "../../BigNumber";
 
 export const getCoinOjectIdsByAmount = async (
   address: string,
-  amount: bigint,
+  amount: string,
   coinType: string
 ): Promise<{
   objectIds: string[];
@@ -48,7 +48,7 @@ export const getCoinOjectIdsByAmount = async (
     balance = BigNumberInstance(coin.balance).plus(balance).toFixed();
     objectIds.push(coin.coinObjectId);
     objectCoins.push(coin);
-    if (BigNumberInstance(balance).isGreaterThanOrEqualTo(amount.toString())) {
+    if (BigNumberInstance(balance).isGreaterThanOrEqualTo(amount)) {
       break;
     }
   }

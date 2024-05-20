@@ -32,12 +32,14 @@ export const COIN_SETTING_QUERY = gql`
     $page: Int
     $sortBy: String
     $sortDirection: SortDirection
+    $coinTypes: [String!]
   ) {
     getCoinsSettings(
       size: $size
       page: $page
       sortBy: $sortBy
       sortDirection: $sortDirection
+      coinTypes: $coinTypes
     ) {
       items {
         type

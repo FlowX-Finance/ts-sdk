@@ -420,9 +420,7 @@ export const getFaasV2 = async (account?: string): Promise<IFaasV2[]> => {
               ? +BigNumberInstance(totalLp).multipliedBy(lpPrice)
               : 0,
           totalLiquidDecimal:
-            +totalLp > 0 && +lpPrice > 0
-              ? +BigNumberInstance(totalLp)
-              : 0,
+            +totalLp > 0 && +lpPrice > 0 ? +BigNumberInstance(totalLp) : 0,
           totalLpDeposit: accountStaked
             ? +getBalanceAmount(
                 ((accountStaked as any)?.data.content as any)?.fields?.amount,
