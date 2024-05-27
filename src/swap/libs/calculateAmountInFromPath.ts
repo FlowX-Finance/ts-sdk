@@ -1,4 +1,4 @@
-import { BigNumberInstance } from "../../BigNumber";
+import { BigNumb } from "../../BigNumber";
 import { PairSetting, PoolInfo, SmartRoute } from "../../types";
 import { getReserveByCoinType } from "../../utils";
 export const getAmountIn = (
@@ -7,8 +7,8 @@ export const getAmountIn = (
   reserveOut: string,
   fee: number
 ): string => {
-  const numerator = BigNumberInstance(reserveIn).multipliedBy(amountOut);
-  const denominator = BigNumberInstance(reserveOut)
+  const numerator = BigNumb(reserveIn).multipliedBy(amountOut);
+  const denominator = BigNumb(reserveOut)
     .minus(amountOut)
     .multipliedBy(1 - fee);
 

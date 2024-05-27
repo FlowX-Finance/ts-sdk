@@ -4,9 +4,13 @@ An FlowX Typescript SDK is a software development kit that allows developers to 
 
 # Features
 
+- Retrieve list token in flowx and their's metadata.
 - Retrieve user liquidity.
 - Retrieve list farm genesix and user position.
 - Retrieve list farm FaaS and user position.
+- Retrieve transaction block for swap V2
+- Retrieve transaction block for swap V3
+- Retrieve transaction block liquidity management V3
 
 # Getting Started
 
@@ -16,16 +20,31 @@ npm i @flowx-pkg/ts-sdk
 
 # FlowX SDK
 
+## 1. Retrieve token list in Flowx
+
+```
+import {getLiquidity, CoinMetadata} from "@flowx-pkg/ts-sdk"
+
+const coins: CoinMetadata[] = await getCoinsFlowX(signal)
+```
+
+| Arguments | Description                              | Type            |
+| --------- | ---------------------------------------- | --------------- |
+| `signal`  | (Optional) Signal to abort current query | AbortController |
+
 ## 1. Retrieve user liquidity
 
 ```
-import {getLiquidity} from "@flowx-pkg/ts-sdk"
+import {getLiquidity,ILiquidity} from "@flowx-pkg/ts-sdk"
 
-let address: string = "..." //required: user address
-let sortType: string = "..." //optional (lpValue, userLpBalance, totalLpSupply)
-let sortOrder: stringr = "..." //optional (ascending , descending)
-let userLiquidity: ILiquidity = await getLiquidity(address, sortType, sortOrder)
+const userLiquidity: ILiquidity[] = await getLiquidity(address, sortType, sortOrder)
 ```
+
+| Arguments   | Description                                    | Type                                  |
+| ----------- | ---------------------------------------------- | ------------------------------------- |
+| `address`   | Address to retrieve information                | string                                |
+| `sortType`  | (Optional) The criteria to sort data retrieved | lpValue, userLpBalance, totalLpSupply |
+| `sortOrder` | (Optional) The order of sorting                | ascending , descending                |
 
 ## 2. Retrieve list farm genesix and user position
 
@@ -45,7 +64,7 @@ let address: string = "..." //optional: user address
 let listFaaS: IFaasV2[] = await getFaasV2(address)
 ```
 
-## 4. SWAP Function
+## 4. SWAP V2 Function
 
 ```
 import {calculateAmountIn, swapExactInput} from "@flowx-pkg/ts-sdk"
@@ -75,7 +94,7 @@ const tx: TransactionBock = await swapExactInput(
 );
 ```
 
-## 5. SWAP Aggregator
+## 5. SWAP Aggregator (V3)
 
 ### getSmartRouting
 
@@ -89,7 +108,7 @@ const smartRouting:ISmartRouting  = await getSmartRouting(
 	amountIn,
 	signal,
 	source
-	)
+)
 
 interface ISmartRouting {
 	paths: ISmartPathV3[],
@@ -98,13 +117,13 @@ interface ISmartRouting {
 
 ```
 
-| Arguments  | Description                                                                        | Type                                                             |
-| ---------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| `tokenIn`  | Type of token in                                                                   | string                                                           |
-| `tokenOut` | Type of token out                                                                  | string                                                           |
-| `amountIn` | Ammount of token in                                                                | string                                                           |
-| `signal`   | Signal to abort current query                                                      | AbortController                                                  |
-| `source`   | (Optional) List dex that use to searching smart route. Default is included all dex | Array("FLOWX","FLOWX_CLMM","KRIYA","TURBOS",CETUS", "AFTERMATH") |
+| Arguments  | Description                                                                        | Type                                                                        |
+| ---------- | ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `tokenIn`  | Type of token in                                                                   | string                                                                      |
+| `tokenOut` | Type of token out                                                                  | string                                                                      |
+| `amountIn` | Amount of token in                                                                 | string                                                                      |
+| `signal`   | Signal to abort current query                                                      | AbortController                                                             |
+| `source`   | (Optional) List dex that use to searching smart route. Default is included all dex | Array("FLOWX","FLOWX_CLMM","KRIYA","TURBOS",CETUS", "AFTERMATH","DEEPBOOK") |
 
 ### estimateGasFee
 
@@ -112,6 +131,7 @@ Estimate gas fee for conducting transaction, amount token out and list of amount
 
 ```
 import {estimateGasFee} from "@flowx-pkg/ts-sdk"
+
 const result:IEstimateGasResult|undefined  = await estimateGasFee(
 	tx,
 	account)
@@ -137,7 +157,8 @@ const tx: TransactionBock = await txBuild(
 	amountOut,
 	coinInType,
 	account,
-	pathsAmountOut)
+	pathsAmountOut
+)
 ```
 
 | Arguments        | Description                                                                                                                                                                                                                                             | Type           |
@@ -150,10 +171,9 @@ const tx: TransactionBock = await txBuild(
 | `account`        | Address conducting swap transaction                                                                                                                                                                                                                     | string         |
 | `pathsAmountOut` | (Optional) List amount actual calculated after `estimateGasFee`. Add this argument may turn txBuild to tx for actual transaction. Pass it may turn txBuild to tx for devInpsecTransaction                                                               | string[]       |
 
-## Usage
+### Usage Swap V3
 
 ```
-
 import {txBuild, estimateGasFee, getSmartRouting} from "@flowx-pkg/ts-sdk"
 
 const {paths,amountOut} = await getSmartRouting(coinInType,coinOutType,decimalInAmount,abortQuerySmartRef.current.signal)
@@ -164,3 +184,133 @@ const { fee, amountOut:amountOutDev, pathsAmountOut } = await estimateGasFee(txb
 
 const tx = await txBuild(paths,slippage,amountIn,amountOutDev,coinInType,account,pathsAmountOut)
 ```
+
+## 6. Liquidity management (V3)
+
+### getUserLiquidityV3
+
+Retrieve the list of liquidity position owned by provided address.
+
+```
+import {getUserLiquidityV3, IUserLiquidV3Position} from "@flowx-pkg/ts-sdk"
+
+const result: IUserLiquidV3Position = await getUserLiquidityV3(account)
+```
+
+### getPositionDetailV3
+
+Retrieve the information of provided position.
+
+```
+import {getPositionDetailV3, IPDV3State} from "@flowx-pkg/ts-sdk"
+
+const result: IPDV3State = await getPositionDetailV3(positionObjectId,account,callTime);
+```
+
+| Arguments          | Description                                                                                        | Type   |
+| ------------------ | -------------------------------------------------------------------------------------------------- | ------ |
+| `positionObjectId` | Position's object id                                                                               | string |
+| `account`          | (Optional) Address for checking rewards and ownership of position                                  | string |
+| `callTime`         | (Optional) Internal served for retry in case of failure fetching data. Leave it blank is recommend | number |
+
+### getTickClmm
+
+Retrieve the list of ticks of pool liquid
+
+```
+import {getTickClmm, IGetClmmTicks} from "@flowx-pkg/ts-sdk"
+
+const result: IGetClmmTicks = await getTickClmm(poolId)
+```
+
+### buildTxAddLiquidV3
+
+Retrieve the transaction block to add liquidity (creating new position). If the pool liquid does not exist, this also create new pool liquid.
+
+```
+import {buildTxAddLiquidV3} from "@flowx-pkg/ts-sdk"
+
+const tx: TransactionBock = await txBuild(
+	coinX,
+	coinY,
+	slippage,
+	fee,
+	lowerTick,
+	upperTick,
+	amountX,
+	amountY,
+	account
+)
+```
+
+| Arguments   | Description                                       | Type                     |
+| ----------- | ------------------------------------------------- | ------------------------ |
+| `coinX`     | Token X metadata                                  | CoinMetadata (sdk types) |
+| `coinY`     | Token Y metadata                                  | CoinMetadata (sdk types) |
+| `slippage`  | Slippage (EX: 0.01% = 0.0001)                     | string                   |
+| `fee`       | Fee tier value of pool                            | IFeeTierV3               |
+| `lowerTick` | TickIndex's value of lower price that user config | number                   |
+| `upperTick` | TickIndex's value of upper price that user config | number                   |
+| `amountX`   | Amount of token X to deposit                      | string                   |
+| `amountY`   | Amount of token Y to deposit                      | string                   |
+| `account`   | Address conducting transaction                    | string                   |
+
+### buildTxIncreaseLiquidV3
+
+Retrieve the transaction block to increase liquidity to existed position that user owned.
+
+```
+import {buildTxIncreaseLiquidV3} from "@flowx-pkg/ts-sdk"
+
+const tx: TransactionBock = await buildTxIncreaseLiquidV3(
+	amountX,
+	amountY,
+	account,
+	coinX,
+	coinY,
+	positionObjectId,
+	slippage
+)
+```
+
+| Arguments          | Description                    | Type                     |
+| ------------------ | ------------------------------ | ------------------------ |
+| `amountX`          | Amount of token X to deposit   | string                   |
+| `amountY`          | Amount of token Y to deposit   | string                   |
+| `account`          | Address conducting transaction | string                   |
+| `coinX`            | Token X metadata               | CoinMetadata (sdk types) |
+| `coinY`            | Token Y metadata               | CoinMetadata (sdk types) |
+| `positionObjectId` | Position's object id           | string                   |
+| `slippage`         | Slippage (EX: 0.01% = 0.0001)  | string                   |
+
+### buildTxRemoveLiquidV3
+
+Retrieve the transaction block to remove liquidity to existed position that user owned.
+
+```
+import {buildTxRemoveLiquidV3} from "@flowx-pkg/ts-sdk"
+
+const tx: TransactionBock = await buildTxRemoveLiquidV3(
+	coinX,
+	coinY,
+	positionObjectId,
+	liquid2Remove,
+	amountX,
+	amountY,
+	account,
+	poolReward,
+	removeAll
+)
+```
+
+| Arguments          | Description                                        | Type                     |
+| ------------------ | -------------------------------------------------- | ------------------------ |
+| `coinX`            | Token X metadata                                   | CoinMetadata (sdk types) |
+| `coinY`            | Token Y metadata                                   | CoinMetadata (sdk types) |
+| `positionObjectId` | Position's object id                               | string                   |
+| `liquid2Remove`    | Amount liquidity desired to remove (Decimal value) | string                   |
+| `amountX`          | Amount of token X to deposit                       | string                   |
+| `amountY`          | Amount of token Y to deposit                       | string                   |
+| `account`          | Address conducting transaction                     | string                   |
+| `poolReward`       | List of reward tokens and their's amount           | IPoolRewardV3[]          |
+| `removeAll`        | (Optional) Defined remove all liquidity or not     | Boolean                  |

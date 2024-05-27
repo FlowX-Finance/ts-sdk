@@ -16,7 +16,7 @@ import {
   client,
   provider,
 } from "./constants";
-import { BIG_TEN, BigNumber, BigNumberInstance } from "./BigNumber";
+import { BIG_TEN, BigNumber, BigNumb } from "./BigNumber";
 import {
   CoinMetadata,
   ICoinBalance,
@@ -157,14 +157,14 @@ export const getDecimalAmount = (
   amount: string | number,
   decimals = LP_DECIMAL
 ) => {
-  return BigNumberInstance(amount).times(BIG_TEN.pow(decimals)).toFixed();
+  return BigNumb(amount).times(BIG_TEN.pow(decimals)).toFixed();
 };
 
 export const getBalanceAmount = (
   amount: string | number,
   decimals = LP_DECIMAL
 ) => {
-  return BigNumberInstance(amount).div(BIG_TEN.pow(decimals));
+  return BigNumb(amount).div(BIG_TEN.pow(decimals));
 };
 
 export const calculateReceiveAmount = (
@@ -211,10 +211,10 @@ export const standardizeType = (type: string, fullTypeIfSui?: boolean) => {
 };
 export const getLpPrice = ({ poolInfo, coinX, coinY }: IGetLpPrice) => {
   const { amountX, amountY } = calculateReceiveAmount(poolInfo, coinX, coinY);
-  const amountXValueInUsd = BigNumberInstance(amountX).multipliedBy(
+  const amountXValueInUsd = BigNumb(amountX).multipliedBy(
     coinX.derivedPriceInUSD
   );
-  const amountYValueInUsd = BigNumberInstance(amountY).multipliedBy(
+  const amountYValueInUsd = BigNumb(amountY).multipliedBy(
     coinY.derivedPriceInUSD
   );
   return amountXValueInUsd.plus(amountYValueInUsd).toFixed();
@@ -339,15 +339,11 @@ export const getPools = async (): Promise<IGetPools> => {
     throw error;
   }
 };
-export const getCoinsFlowX = async (
-  coinsTypes?: string[],
-  signal?: any
-): Promise<CoinMetadata[]> => {
+export const getCoinsFlowX = async (signal?: any): Promise<CoinMetadata[]> => {
   try {
     let variable: any = {
       size: 9999,
     };
-    if (coinsTypes) variable.coinsType = coinsTypes;
     const res: any = await client(signal).request(COIN_SETTING_QUERY, variable);
     const listData: CoinMetadata[] = res.getCoinsSettings.items;
     return listData;
@@ -495,9 +491,7 @@ export const orderByKey = (
   do {
     swapped = false;
     for (let i = 0; i < array.length - 1; i++) {
-      if (
-        BigNumberInstance(array[i][key])[compareFunctionName](array[i + 1][key])
-      ) {
+      if (BigNumb(array[i][key])[compareFunctionName](array[i + 1][key])) {
         let temp = array[i];
         array[i] = array[i + 1];
         array[i + 1] = temp;
@@ -510,7 +504,7 @@ export const orderByKey = (
 export const estimateDealine = () => {
   const time = "20";
   const currentDate = new Date().getTime();
-  return +BigNumberInstance(currentDate).plus(+time * 60_000);
+  return +BigNumb(currentDate).plus(+time * 60_000);
 };
 
 export const getAmountOut = (
@@ -519,7 +513,7 @@ export const getAmountOut = (
   reserveOut: string,
   fee: number
 ): string => {
-  const amountWithFee = BigNumberInstance(amountIn).multipliedBy(1 - fee);
+  const amountWithFee = BigNumb(amountIn).multipliedBy(1 - fee);
   const numerator = amountWithFee.multipliedBy(reserveOut);
   const denominator = amountWithFee.plus(reserveIn);
 
@@ -570,4 +564,11 @@ export const getFullyDynamicFields = async (id: string) => {
     dynamicFieldObjects.push(...res.data.map((item) => item));
   } while (!!hasNextPage);
   return dynamicFieldObjects;
+};
+export const createZeroCoin = (tx: TransactionBlock, coinType: string) => {
+  const [zeroCoin] = tx.moveCall({
+    target: `0x2::coin::zero`,
+    typeArguments: [coinType],
+  });
+  return zeroCoin;
 };

@@ -1,4 +1,4 @@
-import { BigNumberInstance } from "../BigNumber";
+import { BigNumb } from "../BigNumber";
 import {
   CLOCK_ID,
   DYNAMIC_FAAS_POS_TYPE,
@@ -265,33 +265,29 @@ export const getFaasV2 = async (account?: string): Promise<IFaasV2[]> => {
               ].derivedPriceInUSD
             : 0;
         const tokenRw = token
-          ? +BigNumberInstance(
-              +getBalanceAmount(info.token_per_seconds, token.decimals)
-            )
+          ? +BigNumb(+getBalanceAmount(info.token_per_seconds, token.decimals))
               .multipliedBy(token.derivedPriceInUSD)
               .toFixed()
           : 0;
         const flxRw =
           +flxPrice > 0
-            ? +BigNumberInstance(
+            ? +BigNumb(
                 +getBalanceAmount(info.flx_per_seconds, FLX_DECIMAL)
               ).multipliedBy(flxPrice)
             : 0;
 
-        const totalRw = +BigNumberInstance(tokenRw).plus(flxRw);
+        const totalRw = +BigNumb(tokenRw).plus(flxRw);
         const totalLp =
           info.lp_custodian.fields.reserve > 0
-            ? +BigNumberInstance(info.lp_custodian.fields.reserve).div(
-                10 ** LP_DECIMAL
-              )
+            ? +BigNumb(info.lp_custodian.fields.reserve).div(10 ** LP_DECIMAL)
             : 0;
         const totalLpInUsd =
           +totalLp > 0 && +lpPrice > 0
-            ? +BigNumberInstance(totalLp).multipliedBy(lpPrice)
+            ? +BigNumb(totalLp).multipliedBy(lpPrice)
             : 0;
         const rewardApr =
           +totalLpInUsd > 0
-            ? BigNumberInstance(totalRw)
+            ? BigNumb(totalRw)
                 .multipliedBy(31_556_926)
                 .div(totalLpInUsd)
                 .multipliedBy(100)
@@ -304,7 +300,7 @@ export const getFaasV2 = async (account?: string): Promise<IFaasV2[]> => {
         // console.log('TTT', rawApr, pairsList.find((item: any) => item.lpType === trueType)?.stats?.aprPerformance7D);
         let listReward = [] as CoinMetadata[],
           listPoolReward = [] as IFaasUserRw[];
-        const durationInSec = +BigNumberInstance(info.ended_at_ms)
+        const durationInSec = +BigNumb(info.ended_at_ms)
           .minus(info.started_at_ms)
           .div(1000);
 
@@ -322,9 +318,7 @@ export const getFaasV2 = async (account?: string): Promise<IFaasV2[]> => {
         if (+info.token_per_seconds > 0 && idxTokenRwType > -1) {
           listReward.push(coins[idxTokenRwType]);
           const totalTokenRw = token
-            ? BigNumberInstance(info.token_per_seconds).multipliedBy(
-                durationInSec
-              ) + ""
+            ? BigNumb(info.token_per_seconds).multipliedBy(durationInSec) + ""
             : "0";
           // console.log('QQQQ', info);
           listPoolReward.push({
@@ -339,9 +333,7 @@ export const getFaasV2 = async (account?: string): Promise<IFaasV2[]> => {
         if (+info.flx_per_seconds > 0 && idxFlxRwType > -1) {
           listReward.push(coins[idxFlxRwType]);
           const totalFlxRw = token
-            ? BigNumberInstance(info.flx_per_seconds).multipliedBy(
-                durationInSec
-              ) + ""
+            ? BigNumb(info.flx_per_seconds).multipliedBy(durationInSec) + ""
             : "0";
           listPoolReward.push({
             token: coins[idxFlxRwType],
@@ -417,10 +409,10 @@ export const getFaasV2 = async (account?: string): Promise<IFaasV2[]> => {
           creator: info.creator,
           totalLiquid:
             +totalLp > 0 && +lpPrice > 0
-              ? +BigNumberInstance(totalLp).multipliedBy(lpPrice)
+              ? +BigNumb(totalLp).multipliedBy(lpPrice)
               : 0,
           totalLiquidDecimal:
-            +totalLp > 0 && +lpPrice > 0 ? +BigNumberInstance(totalLp) : 0,
+            +totalLp > 0 && +lpPrice > 0 ? +BigNumb(totalLp) : 0,
           totalLpDeposit: accountStaked
             ? +getBalanceAmount(
                 ((accountStaked as any)?.data.content as any)?.fields?.amount,

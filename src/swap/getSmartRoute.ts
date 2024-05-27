@@ -1,4 +1,4 @@
-import { BigNumberInstance } from "../BigNumber";
+import { BigNumb } from "../BigNumber";
 import { MAX_ROUTE_HOPS, client } from "../constants";
 import { IPools, PairSetting, PoolInfo } from "../types";
 import { getPairs, getPools } from "../utils";
@@ -65,7 +65,7 @@ const getBestRouterExactIn = (
   poolInfos: PoolInfo[]
 ) => {
   let bestTrade: PairSetting[];
-  let maxAmountOut = BigNumberInstance(0);
+  let maxAmountOut = BigNumb(0);
 
   tradAbles.forEach((item) => {
     let smartRoute = calculateAmountOutFromPath(
@@ -76,8 +76,8 @@ const getBestRouterExactIn = (
     );
     // console.log(smartRoute, 'smartRoute');
 
-    if (BigNumberInstance(smartRoute.amountOut).gte(maxAmountOut)) {
-      maxAmountOut = BigNumberInstance(smartRoute.amountOut);
+    if (BigNumb(smartRoute.amountOut).gte(maxAmountOut)) {
+      maxAmountOut = BigNumb(smartRoute.amountOut);
       bestTrade = item;
     }
   });
@@ -95,7 +95,7 @@ const getBestRouterExactOut = (
   poolInfos: PoolInfo[]
 ) => {
   let bestTrade: PairSetting[] = [];
-  let maxAmountIn = BigNumberInstance("Infinity");
+  let maxAmountIn = BigNumb("Infinity");
   tradAbles.forEach((item) => {
     let smartRoute = calculateAmountInFromPath(
       amount,
@@ -106,10 +106,10 @@ const getBestRouterExactOut = (
 
     // console.log(smartRoute, 'smartRoute');
     if (
-      BigNumberInstance(smartRoute.amountIn).lte(maxAmountIn) &&
-      BigNumberInstance(smartRoute.amountIn).gt(1)
+      BigNumb(smartRoute.amountIn).lte(maxAmountIn) &&
+      BigNumb(smartRoute.amountIn).gt(1)
     ) {
-      maxAmountIn = BigNumberInstance(smartRoute.amountIn);
+      maxAmountIn = BigNumb(smartRoute.amountIn);
       bestTrade = item;
     }
   });

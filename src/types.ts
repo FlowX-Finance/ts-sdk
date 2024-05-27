@@ -311,4 +311,170 @@ export type TSourceSmartRouting =
   | "KRIYA"
   | "TURBOS"
   | "CETUS"
-  | "AFTERMATH";
+  | "AFTERMATH"
+  | "DEEPBOOK";
+export interface IPriceWithTick {
+  price: string;
+  sqrtPrice?: string;
+  tickIndex: number;
+}
+export interface IPortionItem {
+  amount: string;
+  amountInUsd: string;
+}
+export interface IPortionItemWithPercent extends IPortionItem {
+  percentage: string;
+}
+export interface ILpCoinPortionWithPercent {
+  coinX: IPortionItemWithPercent;
+  coinY: IPortionItemWithPercent;
+}
+export interface ILpCoinPortion {
+  coinX: IPortionItem;
+  coinY: IPortionItem;
+}
+export interface ILpV3Rw {
+  rewardX: string;
+  rewardY: string;
+}
+export interface ILpV3Unclaimed extends ILpCoinPortion {
+  totalInUsd: string;
+}
+export interface ICurrentPricePD extends IPriceWithTick {
+  sqrtPrice: string;
+}
+export interface IPoolRewardV3 {
+  amount: string;
+  coin: CoinMetadata;
+}
+export interface IUserLiquidV3Position {
+  coinX: CoinMetadata;
+  coinY: CoinMetadata;
+  currentPortion: ILpCoinPortion;
+  positionLiquid: string;
+  positionId: string;
+  minPrice: ICurrentPricePD;
+  maxPrice: ICurrentPricePD;
+  currentPrice: ICurrentPricePD;
+  poolLiquid: string;
+  feeRate: string;
+  reward: ILpV3Rw;
+  apr: string;
+  id: string;
+  poolReward: IPoolRewardV3[];
+}
+export interface IPoolInfoV3Brief {
+  feeGrowthGlobalX: string;
+  feeGrowthGlobalY: string;
+  liquidity: string;
+  locked: boolean;
+  maxLiquidityPerTick: string;
+  protocolFeeRate: string;
+  protocolFeeX: string;
+  protocolFeeY: string;
+  sqrtPrice: string;
+  feeRate: string;
+}
+export interface ILpCoin {
+  coinX: CoinMetadata | null;
+  coinY: CoinMetadata | null;
+}
+export interface ITransactionClmm {
+  amountXIn: string;
+  amountXOut: string;
+  amountYIn: string;
+  amountYOut: string;
+  coinX: CoinMetadata;
+  coinY: CoinMetadata;
+  eventSeq: string;
+  sender: string;
+  timestamp: string;
+  totalAmountInUSD: string;
+  txDigest: string;
+  type: string;
+}
+export interface IPDV3State extends IPoolInfoV3Brief, ILpCoin {
+  currentPrice: ICurrentPricePD;
+  currentPortion: ILpCoinPortionWithPercent;
+  positionLiquid: string;
+  isOwned: boolean;
+  minPrice: ICurrentPricePD;
+  maxPrice: ICurrentPricePD;
+  reward: ILpV3Rw;
+  unClaimedLiquid: ILpV3Unclaimed;
+  id: string;
+  apr: string;
+  poolReward: IPoolRewardV3[];
+  ticks: ChartEntry[];
+  history: ITransactionClmm[];
+}
+export interface ITickClmm {
+  liquidityNet: string;
+  liquidityGross: string;
+  tick: number;
+}
+export interface ChartEntry {
+  activeLiquidity: number;
+  price0: number;
+  liquidityNet: number;
+  tick: number;
+}
+export interface IGetTransactionClmm {
+  poolId: string;
+  positionId: string;
+  page: number;
+  size: number;
+  sender: string;
+}
+export type TCachingRequest =
+  | "no-cache"
+  | "no-store"
+  | "force-cache"
+  | "only-if-cached"
+  | "reload"
+  | "default";
+export interface IFeeTierV3 {
+  value: number;
+  valueDecimal: number;
+  spacing: number;
+}
+export interface IDataPools {
+  typeCoinX: string;
+  typeCoinY: string;
+  feeRate: string;
+  id: string;
+}
+export interface IGetClmmPoolDetail {
+  volume24H?: string;
+  fee24H?: string;
+  fee7D?: string;
+  apr?: string;
+  totalLiquidityInUSD?: string;
+  liquidityUSDX?: string;
+  liquidityUSDY?: string;
+}
+export interface IPoolInfoV3 extends IGetClmmPoolDetail {
+  typeCoinX: string;
+  typeCoinY: string;
+  liquidity: string;
+  sqrtPrice: string;
+  feeRate: number;
+  reserveX: string;
+  reserveY: string;
+  id: string;
+  totalLiquid: string;
+  volume24h?: string;
+  fee24h?: string;
+  fee7d?: string;
+  apr?: string;
+  rewardApr: string;
+  currentPrice: string;
+  currentTickIndex: number;
+}
+export interface IGetClmmTicks {
+  _id: string;
+  liquidityGross: string;
+  liquidityNet: string;
+  pool: string;
+  tick: number;
+}

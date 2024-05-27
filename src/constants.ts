@@ -1,11 +1,13 @@
 import { Connection, JsonRpcProvider } from "@mysten/sui.js";
 import { GraphQLClient } from "graphql-request";
 import { BigNumber } from "./BigNumber";
+import { TCachingRequest } from "./types";
 
 // //MAINNET
-export const client = (signal?: any) => {
+export const client = (signal?: any, cache?: TCachingRequest) => {
   return new GraphQLClient("https://api.flowx.finance/flowx-be/graphql", {
     signal,
+    cache,
   });
 };
 
@@ -57,9 +59,9 @@ export const PACKAGE_OBJECT_ID =
   "0xba153169476e8c3114962261d1edc70de5ad9781b83cc617ecc8c1923191cae0";
 export const SWAP_V3 = {
   UNIVERSAL_ROUTER:
-    "0x567c4e6cfda46287d193ce23d44a0b912311f4daf957bb9362a4f289f023273f",
+    "0xe9d6c9313a4202b3badf0ebb7bdc400f58e10eebc4cad6318d38419828975366",
   UNIVERSAL_TREASURY:
-    "0x9fe407e4b5c3e3aa747eb4580d8e607d0e1ce540bec1063785d0b47126c749cf",
+    "0x9c478eaea05cd80eb38bd20ad17cef159d516bac4e3b8627bf8507ec26567a0e",
 };
 export const ADD_LIQUIDITY_V3 = {
   POOL_REGISTRY_OBJ:
@@ -72,6 +74,12 @@ export const ADD_LIQUIDITY_V3 = {
     "0x67624a1533b5aff5d0dfcf5e598684350efd38134d2d245f475524c03a64e656",
 };
 export const FUNCTION = {
+  ADD_LIQUIDITY: "add_liquidity",
+  ZAP_IN: "zap_in",
+  REMOVE_LIQUIDITY: "remove_liquidity",
+  REMOVE_LIQUIDITY_DIRECT: "remove_liquidity_direct",
+  ZAP_OUT_TO_X: "zap_out_to_x",
+  ZAP_OUT_TO_Y: "zap_out_to_y",
   SWAP_EXACT_OUTPUT: "swap_exact_output",
   SWAP_EXACT_INPUT: "swap_exact_input",
   SWAP_EXACT_INPUT_DOUBLEHOP: "swap_exact_input_doublehop",
@@ -86,17 +94,78 @@ export const FUNCTION = {
   SWAP_EXACT_TRIPLE_INPUT: "swap_exact_triple_input",
   SWAP_EXACT_QUADRUPLE_INPUT: "swap_exact_quadruple_input",
   SWAP_EXACT_QUINTUPLE_INPUT: "swap_exact_quintuple_input",
-  SETTLE_ROUTING_V3: "settle",
+  MINT_XFLX: "mint_and_transfer",
+  LAZY_BURN_XFLX: "lazy_burn",
+  BURN_XFLX: "burn",
+  CANCEL_LAZY_BURN_XFLX: "cancel_lazy_burn",
+  BOOST_POSITION: "boost_position",
+  DECREASE_POSITION: "decrease_position",
+  DECREASE_POSITION_EMERGENCY_FAAS: "decrease_position_emergency",
+  HARVEST_POSITION: "harvest_position",
+  INCREASE_POSITION: "increase_position",
+  LOCK_POSITION: "lock_position",
+  OPEN_POSITION: "open_position",
+  UNBOOST_POSITION: "unboost_position",
+  OPEN_BOOST_POSITION: "open_and_boost_position",
+  CAMPAIGN_DEPOSIT: "deposit",
+  CREATE_POOL: "create_pool",
+  FETCH_PENDING_REWARD: "fetch_pending_reward",
+  UPDATE_END_TIME: "update_end_time",
+  MINT: "mint",
+  PRE_SALE_DEPOSIT: "pre_sale_deposit",
+  PUBLIC_SALE_DEPOSIT: "public_sale_deposit",
+  PUBLIC_SALE_WITHDRAW: "public_sale_withdraw",
+  CLAIM_PRE_SALE: "claim_pre_sale",
+  CLAIM_PUBLIC_SALE: "claim_public_sale",
+  HARVEST: "harvest",
+  CLAIM_FUND_PRE_SALE: "claim_fund_pre_sale",
+  CLAIM: "claim",
+  REFUND: "refund",
+  RELEASE: "release",
+  COMMIT: "commit",
+  BORROW_MUT_PAIR_AND_TREASURY: "borrow_mut_pair_and_treasury",
+  BURN: "burn",
+  STAKE: "stake",
+  UN_STAKE: "unstake",
+  CREATE_INITIAL_POOL: "create_and_initialize_pool",
+  INCREASE_LIQUIDITY: "increase_liquidity",
+  DECREASE_LIQUIDITY: "decrease_liquidity",
+  COLLECT: "collect",
+  COLLECT_POOL_REWARD: "collect_pool_reward",
+  CLOSE_POSITION: "close_position",
   INIT_PATH: "initialize_path",
   INIT_ROUTING: "initialize_routing",
   NEXT_ROUTING_V3: "next",
+  SETTLE_ROUTING_V3: "settle",
   FLOWX_SWAP: "flowx_swap_exact_input",
   FLOWX_SWAP_CLMM: "flowx_clmm_swap_exact_input",
+  CHECK_DEALINE: "check_deadline",
+  CHECK_AMOUNT_THRESHOLD: "check_amount_threshold",
 };
 export const MODULE = {
+  ROUTER: "router",
+  ROUTER_V2: "router_v2",
+  ZAPPER: "zapper",
+  FLX: "flx",
+  XFLX: "xflx",
+  FARM: "farms",
+  CAMPAGIN: "flowx_campaign",
+  OPERATOR: "operator",
+  FETCHER: "fetcher",
+  COLLECTIBLE: "collectible",
+  LAUNCHPAD: "launchpad",
+  EXT_LAUNCHPAD: "external_launchpad",
+  TOKEN_VESTING: "token_vesting",
+  DISTRIBUTOR: "distributor",
+  FACTORY: "factory",
+  PAIR: "pair",
+  STAKING: "staking",
+  POSITION_MANAGER: "position_manager",
+  POOL_MANAGER: "pool_manager",
+  SWAP_ROUTER: "swap_router",
   UNIVERSAL_ROUTER: "universal_router",
 };
-
+export const POSITION_LIQUID_V3_TYPE = `${ADD_LIQUIDITY_V3.CLMM_PACKAGE}::position::Position`;
 /**
  * The maximum tick index supported by the clmmpool program.
  * @category Constants
@@ -127,6 +196,7 @@ export const MIN_SQRT_PRICE = "4295048016";
  * @category Constants
  */
 export const FEE_RATE_DENOMINATOR = BigNumber(1_000_000);
+export const MAXU64 = "18446744073709551615";
 
 // TESTNET;
 // import BigNumber from "bignumber.js";

@@ -1,7 +1,7 @@
 import { CoinStruct, PaginatedCoins } from "@mysten/sui.js";
 import { provider } from "../../constants";
 import { orderByKey } from "../../utils";
-import { BigNumberInstance } from "../../BigNumber";
+import { BigNumb } from "../../BigNumber";
 
 export const getCoinOjectIdsByAmount = async (
   address: string,
@@ -45,10 +45,10 @@ export const getCoinOjectIdsByAmount = async (
   let objectIds = [] as any;
   let objectCoins = [];
   for (const coin of coinObj ?? []) {
-    balance = BigNumberInstance(coin.balance).plus(balance).toFixed();
+    balance = BigNumb(coin.balance).plus(balance).toFixed();
     objectIds.push(coin.coinObjectId);
     objectCoins.push(coin);
-    if (BigNumberInstance(balance).isGreaterThanOrEqualTo(amount)) {
+    if (BigNumb(balance).isGreaterThanOrEqualTo(amount)) {
       break;
     }
   }

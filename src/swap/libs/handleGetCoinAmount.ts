@@ -1,6 +1,6 @@
 import { TransactionArgument, TransactionBlock } from "@mysten/sui.js";
 import { getCoinOjectIdsByAmount } from "./getCoinOjectIdsByAmount";
-import { BigNumberInstance } from "../../BigNumber";
+import { BigNumb } from "../../BigNumber";
 import { getSuiCoinForTx } from "./getSuiCoinForTx";
 import { SUI_TYPE } from "../../constants";
 
@@ -11,7 +11,7 @@ export const handleGetCoinAmount = async (
   inheritTx?: TransactionBlock
 ): Promise<{ tx: TransactionBlock; coin: string | TransactionArgument }> => {
   const tx = inheritTx ?? new TransactionBlock();
-  const bigintAmount = BigNumberInstance(amount).toFixed(0);
+  const bigintAmount = BigNumb(amount).toFixed(0);
   const { objectIds, balance, objectCoins } = await getCoinOjectIdsByAmount(
     account,
     bigintAmount,
@@ -28,8 +28,8 @@ export const handleGetCoinAmount = async (
       objectIds.slice(1).map((item) => tx.object(item))
     );
   }
-  const splitAmount = BigNumberInstance(balance).minus(bigintAmount).toFixed();
-  if (BigNumberInstance(splitAmount).isGreaterThan(0)) {
+  const splitAmount = BigNumb(balance).minus(bigintAmount).toFixed();
+  if (BigNumb(splitAmount).isGreaterThan(0)) {
     // split correct amount to swap
     const [coin] = tx.splitCoins(tx.object(coinObjectId), [
       tx.pure(splitAmount),

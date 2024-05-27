@@ -13,7 +13,7 @@ import {
   getPairs,
   getPools,
 } from "../utils";
-import { BigNumberInstance } from "../BigNumber";
+import { BigNumb } from "../BigNumber";
 import { getSmartRoute } from "./getSmartRoute";
 import { calculateAmountOutFromPath } from "./libs/calculateAmountOutFromPath";
 import { calculateAmountInFromPath } from "./libs/calculateAmountInFromPath";
@@ -35,7 +35,7 @@ export const handleCalcAmountOut = async (
     poolInfos = poolData;
   }
 
-  let decimalInAmount = BigNumberInstance(
+  let decimalInAmount = BigNumb(
     getDecimalAmount(value, coinIn.decimals)
   ).toFixed(0);
   let amountInFormat = getBalanceAmount(
@@ -99,7 +99,7 @@ export const handleCalcAmountIn = async (
     poolInfos = poolData;
   }
 
-  let decimalOutAmount = BigNumberInstance(
+  let decimalOutAmount = BigNumb(
     getDecimalAmount(value, coinOut.decimals)
   ).toFixed(0);
   let amountOutFormat = getBalanceAmount(

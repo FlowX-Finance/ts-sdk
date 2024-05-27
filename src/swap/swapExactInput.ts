@@ -1,5 +1,5 @@
 import { TransactionBlock } from "@mysten/sui.js";
-import { BigNumberInstance } from "../BigNumber";
+import { BigNumb } from "../BigNumber";
 import {
   CLOCK_ID,
   CONTAINER_OBJECT_ID,
@@ -128,24 +128,11 @@ export const swapExactInput = async (
   try {
     const slipageVal =
       valueSlippage > 100 ? 100 : valueSlippage < 0 ? 0 : valueSlippage;
-    const slippage = BigNumberInstance(slipageVal).div(100).toFixed();
-    // if (isExactIn) {
-    //   console.log("AAA", BigNumberInstance(1).minus(slippage).toFixed(), {
-    //     amountIn: amountIn.decimalAmount,
-    //     amountOutMin: BigNumberInstance(amountOut.decimalAmount)
-    //       .multipliedBy(BigNumberInstance(1).minus(slippage).toFixed())
-    //       .toFixed(0),
-    //   });
-    // } else {
-    //   console.log("BBB", {
-    //     amountInMax: amountIn.decimalAmount,
-    //     amountOut: amountOut.decimalAmount,
-    //   });
-    // }
+    const slippage = BigNumb(slipageVal).div(100).toFixed();
     const { typeArguments, args, tx, callFunction } = isExactIn
       ? await getArgsSwapExactInput(
           amountIn.decimalAmount,
-          BigNumberInstance(amountOut.decimalAmount)
+          BigNumb(amountOut.decimalAmount)
             .multipliedBy(1 - +slippage)
             .toFixed(0),
           trades,

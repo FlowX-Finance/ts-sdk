@@ -11,6 +11,7 @@ import { SwapKriyaHandle } from "./SwapKriyaHandle";
 import { SwapCetusHandle } from "./SwapCetusHandle";
 import { SwapTurbosHandle } from "./SwapTurbosHandle";
 import { SwapAfterMathHandle } from "./SwapAftermathHandle";
+import { SwapDeepBookHandle } from "./SwapDeepBookHandle";
 
 export const routeTxBuild = async (
   route: Route,
@@ -105,6 +106,16 @@ export const routeTxBuild = async (
         coinTypeOut,
         route.poolId,
         route.amountOut.toFixed(0),
+        tx
+      );
+    }
+    if (protocol === "DEEPBOOK") {
+      await SwapDeepBookHandle(
+        routeObject,
+        coinTypeIn,
+        coinTypeOut,
+        route.swapXtoY,
+        route.poolId,
         tx
       );
     }
