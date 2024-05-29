@@ -339,12 +339,12 @@ export const getPools = async (): Promise<IGetPools> => {
     throw error;
   }
 };
-export const getCoinsFlowX = async (signal?: any): Promise<CoinMetadata[]> => {
+export const getCoinsFlowX = async (): Promise<CoinMetadata[]> => {
   try {
     let variable: any = {
       size: 9999,
     };
-    const res: any = await client(signal).request(COIN_SETTING_QUERY, variable);
+    const res: any = await client().request(COIN_SETTING_QUERY, variable);
     const listData: CoinMetadata[] = res.getCoinsSettings.items;
     return listData;
   } catch (error) {

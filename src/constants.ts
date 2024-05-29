@@ -4,11 +4,13 @@ import { BigNumber } from "./BigNumber";
 import { TCachingRequest } from "./types";
 
 // //MAINNET
-export const client = (signal?: any, cache?: TCachingRequest) => {
-  return new GraphQLClient("https://api.flowx.finance/flowx-be/graphql", {
-    signal,
-    cache,
-  });
+export const client = (cache?: TCachingRequest) => {
+  let config: any;
+  if (cache) config.cache = cache;
+  return new GraphQLClient(
+    "https://api.flowx.finance/flowx-be/graphql",
+    config
+  );
 };
 
 export const provider = new JsonRpcProvider(
@@ -59,9 +61,9 @@ export const PACKAGE_OBJECT_ID =
   "0xba153169476e8c3114962261d1edc70de5ad9781b83cc617ecc8c1923191cae0";
 export const SWAP_V3 = {
   UNIVERSAL_ROUTER:
-    "0xe9d6c9313a4202b3badf0ebb7bdc400f58e10eebc4cad6318d38419828975366",
+    "0x91f3c8ae615e01f7fe2d548357f714eb2b4f6770138d12c5fd5a95a6833359fd",
   UNIVERSAL_TREASURY:
-    "0x9c478eaea05cd80eb38bd20ad17cef159d516bac4e3b8627bf8507ec26567a0e",
+    "0xcc88e1a4c3dd2c847e0a69e651f8ca7a38c8dc93e06106b50d29a4f783e15b77",
 };
 export const ADD_LIQUIDITY_V3 = {
   POOL_REGISTRY_OBJ:

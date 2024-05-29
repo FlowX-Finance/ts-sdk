@@ -52,7 +52,7 @@ export const getTransactionClmm = async ({
   sender,
 }: IGetTransactionClmm) => {
   try {
-    const res: any = await client(undefined, "no-cache").request(
+    const res: any = await client("no-cache").request(
       graphTransactionClmmQuery,
       {
         poolId,

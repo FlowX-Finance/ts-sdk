@@ -10,7 +10,7 @@ An FlowX Typescript SDK is a software development kit that allows developers to 
 - Retrieve list farm FaaS and user position.
 - Retrieve transaction block for swap V2
 - Retrieve transaction block for swap V3
-- Retrieve transaction block liquidity management V3
+- Retrieve transaction block liquidity management V3 (add,remove,increase liquid, collect reward)
 
 # Getting Started
 
@@ -25,12 +25,8 @@ npm i @flowx-pkg/ts-sdk
 ```
 import {getLiquidity, CoinMetadata} from "@flowx-pkg/ts-sdk"
 
-const coins: CoinMetadata[] = await getCoinsFlowX(signal)
+const coins: CoinMetadata[] = await getCoinsFlowX()
 ```
-
-| Arguments | Description                              | Type            |
-| --------- | ---------------------------------------- | --------------- |
-| `signal`  | (Optional) Signal to abort current query | AbortController |
 
 ## 1. Retrieve user liquidity
 
@@ -314,3 +310,25 @@ const tx: TransactionBock = await buildTxRemoveLiquidV3(
 | `account`          | Address conducting transaction                     | string                   |
 | `poolReward`       | List of reward tokens and their's amount           | IPoolRewardV3[]          |
 | `removeAll`        | (Optional) Defined remove all liquidity or not     | Boolean                  |
+
+### getTxCollectRewardLiquidV3
+
+Retrieve the transaction block to collect all pending reward user have in the positon.
+
+```
+import {getTxCollectRewardLiquidV3} from "@flowx-pkg/ts-sdk"
+
+const tx: TransactionBock = await getTxCollectRewardLiquidV3(
+	rewardType,
+	positionObjectId,
+	account,
+	inheritTx
+)
+```
+
+| Arguments          | Description                                               | Type             |
+| ------------------ | --------------------------------------------------------- | ---------------- |
+| `rewardType`       | Type of reward tokens                                     | string[]         |
+| `positionObjectId` | Position's object id                                      | string           |
+| `account`          | Address conducting transaction                            | string           |
+| `inheritTx`        | (Optional) Inherit transaction block from previous action | TransactionBlock |

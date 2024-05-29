@@ -433,6 +433,10 @@ export type TCachingRequest =
   | "only-if-cached"
   | "reload"
   | "default";
+// export interface IClient {
+//   signal?: AbortSignal;
+//   cache?: TCachingRequest;
+// }
 export interface IFeeTierV3 {
   value: number;
   valueDecimal: number;

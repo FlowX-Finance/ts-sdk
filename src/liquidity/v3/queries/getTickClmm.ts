@@ -15,12 +15,9 @@ const graphTickClmmQuery = gql`
 `;
 export const getTickClmm = async (poolId: string): Promise<IGetClmmTicks[]> => {
   try {
-    const res: any = await client(undefined, "no-cache").request(
-      graphTickClmmQuery,
-      {
-        pool: poolId,
-      }
-    );
+    const res: any = await client("no-cache").request(graphTickClmmQuery, {
+      pool: poolId,
+    });
     const data: IGetClmmTicks[] = res.getClmmTicks ?? [];
     return data.filter((item) => +item.liquidityNet !== 0);
   } catch (error) {
