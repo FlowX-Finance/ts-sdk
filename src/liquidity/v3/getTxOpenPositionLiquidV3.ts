@@ -17,7 +17,7 @@ export const getTxOpenPositionLiquidV3 = async (
     arguments: [
       tx.object(ADD_LIQUIDITY_V3.POSITION_REGISTRY_OBJ),
       tx.object(ADD_LIQUIDITY_V3.POOL_REGISTRY_OBJ),
-      tx.pure(fee.valueDecimal),
+      tx.pure(fee.value),
       lowerTickIndex,
       upperTickIndex,
       tx.object(ADD_LIQUIDITY_V3.VERSIONED_OBJ),

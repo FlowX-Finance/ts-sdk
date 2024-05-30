@@ -226,7 +226,7 @@ Retrieve the transaction block to add liquidity (creating new position). If the 
 ```
 import {buildTxAddLiquidV3} from "@flowx-pkg/ts-sdk"
 
-const tx: TransactionBock = await txBuild(
+const tx: TransactionBock = await buildTxAddLiquidV3(
 	coinX,
 	coinY,
 	slippage,
