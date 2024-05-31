@@ -3,23 +3,41 @@ import { BigNumber } from "../BigNumber";
 import { ISmartRouting, Route, TSourceSmartRouting } from "../types";
 import { standardizeType } from "../utils";
 import { normalizeStructTag } from "@mysten/sui.js";
+import { SOURCE_DEX } from "../constants";
+import JsonBigInt from "json-bigint";
+
 export const getSmartRouting = async (
   tokenIn: string,
   tokenOut: string,
   amountIn: string,
   signal: any,
+  insludeSource: boolean,
   source?: TSourceSmartRouting[]
 ): Promise<ISmartRouting> => {
   try {
-    // &includeSources=FLOWX
+    const excludeList = SOURCE_DEX.filter(
+      (item) => !(source ?? SOURCE_DEX).includes(item)
+    );
     let response = await axios.get(
       `https://api.flowx.finance/flowx-ag-routing/api/v1/quote?tokenIn=${normalizeStructTag(
         tokenIn
       )}&tokenOut=${normalizeStructTag(tokenOut)}&amountIn=${amountIn}${
-        source?.length > 0 ? `&includeSources=${source.join(",")}` : ""
+        source?.length > 0 && insludeSource
+          ? `&includeSources=${source.join(",")}`
+          : excludeList?.length > 0
+          ? `&excludeSources=${excludeList.join(",")}`
+          : ""
       }`,
       // `https://flowx-dev.flowx.finance/flowx-ag-routing/api/v1/quote?tokenIn=${tokenIn}&tokenOut=${tokenOut}&amountIn=${amountIn}`,
-      { signal }
+      {
+        signal,
+        transformResponse: [
+          (data) =>
+            JsonBigInt({ storeAsString: true, useNativeBigInt: true }).parse(
+              data
+            ),
+        ],
+      }
     );
     // console.log("response", response);
     if (!response.data.data) return { amountOut: "0", paths: [] };
@@ -51,6 +69,9 @@ export const getSmartRouting = async (
             fee,
             swapXToY,
             lpCoinType,
+            lotSize,
+            minSqrtPriceHasLiquidity,
+            maxSqrtPriceHasLiquidity,
           } = j.extra;
           data.sqrtPrice = nextStateSqrtRatioX64;
           data.liquidity = nextStateLiquidity;
@@ -58,6 +79,9 @@ export const getSmartRouting = async (
           data.fee = fee;
           data.swapXtoY = swapXToY;
           data.lpType = lpCoinType;
+          data.lotSize = lotSize;
+          data.minSqrtPriceHasLiquidity = minSqrtPriceHasLiquidity;
+          data.maxSqrtPriceHasLiquidity = maxSqrtPriceHasLiquidity;
         }
         return data;
       });

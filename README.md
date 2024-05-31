@@ -28,7 +28,7 @@ import {getLiquidity, CoinMetadata} from "@flowx-pkg/ts-sdk"
 const coins: CoinMetadata[] = await getCoinsFlowX()
 ```
 
-## 1. Retrieve user liquidity
+## 2. Retrieve user liquidity
 
 ```
 import {getLiquidity,ILiquidity} from "@flowx-pkg/ts-sdk"
@@ -42,7 +42,7 @@ const userLiquidity: ILiquidity[] = await getLiquidity(address, sortType, sortOr
 | `sortType`  | (Optional) The criteria to sort data retrieved | lpValue, userLpBalance, totalLpSupply |
 | `sortOrder` | (Optional) The order of sorting                | ascending , descending                |
 
-## 2. Retrieve list farm genesix and user position
+## 3. Retrieve list farm genesix and user position
 
 ```
 import {getGenesisFarm} from "@flowx-pkg/ts-sdk"
@@ -51,7 +51,7 @@ let address: string = "..." //optional: user address
 let listGenesisX: IGenesisPoolsData[] = await getGenesisFarm(address)
 ```
 
-## 3. Retrieve list farm FaaS v2 and user position
+## 4. Retrieve list farm FaaS v2 and user position
 
 ```
 import {getFaasV2} from "@flowx-pkg/ts-sdk"
@@ -60,7 +60,7 @@ let address: string = "..." //optional: user address
 let listFaaS: IFaasV2[] = await getFaasV2(address)
 ```
 
-## 4. SWAP V2 Function
+## 5. SWAP V2 Function
 
 ```
 import {calculateAmountIn, swapExactInput} from "@flowx-pkg/ts-sdk"
@@ -90,7 +90,7 @@ const tx: TransactionBock = await swapExactInput(
 );
 ```
 
-## 5. SWAP Aggregator (V3)
+## 6. SWAP Aggregator (V3)
 
 ### getSmartRouting
 
@@ -103,6 +103,7 @@ const smartRouting:ISmartRouting  = await getSmartRouting(
 	tokenOut,
 	amountIn,
 	signal,
+	insludeSource,
 	source
 )
 
@@ -113,13 +114,14 @@ interface ISmartRouting {
 
 ```
 
-| Arguments  | Description                                                                        | Type                                                                        |
-| ---------- | ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| `tokenIn`  | Type of token in                                                                   | string                                                                      |
-| `tokenOut` | Type of token out                                                                  | string                                                                      |
-| `amountIn` | Amount of token in                                                                 | string                                                                      |
-| `signal`   | Signal to abort current query                                                      | AbortController                                                             |
-| `source`   | (Optional) List dex that use to searching smart route. Default is included all dex | Array("FLOWX","FLOWX_CLMM","KRIYA","TURBOS",CETUS", "AFTERMATH","DEEPBOOK") |
+| Arguments       | Description                                                                                                    | Type                                                                        |
+| --------------- | -------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `tokenIn`       | Type of token in                                                                                               | string                                                                      |
+| `tokenOut`      | Type of token out                                                                                              | string                                                                      |
+| `amountIn`      | Amount of token in                                                                                             | string                                                                      |
+| `signal`        | Signal to abort current query                                                                                  | AbortSignal                                                                 |
+| `insludeSource` | Defined way to using `source` to include or exclude dex                                                        | boolean                                                                     |
+| `source`        | (Optional) List dex that use to searching smart route. Default when you dont pass this arg is included all dex | Array("FLOWX","FLOWX_CLMM","KRIYA","TURBOS",CETUS", "AFTERMATH","DEEPBOOK") |
 
 ### estimateGasFee
 
@@ -181,7 +183,7 @@ const { fee, amountOut:amountOutDev, pathsAmountOut } = await estimateGasFee(txb
 const tx = await txBuild(paths,slippage,amountIn,amountOutDev,coinInType,account,pathsAmountOut)
 ```
 
-## 6. Liquidity management (V3)
+## 7. Liquidity management (V3)
 
 ### getUserLiquidityV3
 

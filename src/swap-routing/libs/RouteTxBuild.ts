@@ -11,7 +11,7 @@ import { SwapKriyaHandle } from "./SwapKriyaHandle";
 import { SwapCetusHandle } from "./SwapCetusHandle";
 import { SwapTurbosHandle } from "./SwapTurbosHandle";
 import { SwapAfterMathHandle } from "./SwapAftermathHandle";
-import { SwapDeepBookHandle } from "./SwapDeepBookHandle";
+import { SwapDeepBookHandle, SwapDeepBookHandleV2 } from "./SwapDeepBookHandle";
 
 export const routeTxBuild = async (
   route: Route,
@@ -32,12 +32,22 @@ export const routeTxBuild = async (
         const rate = route?.swapXtoY
           ? BigNumber(1).minus(0.15)
           : BigNumber(1).plus(0.15);
-        const sqrtPriceCalc = rate.multipliedBy(route?.sqrtPrice).toFixed(0);
-        sqrtPrice = BigNumber(sqrtPriceCalc).isGreaterThan(MAX_SQRT_PRICE)
-          ? MAX_SQRT_PRICE
-          : BigNumber(sqrtPriceCalc).isLessThan(MIN_SQRT_PRICE)
-          ? MIN_SQRT_PRICE
-          : sqrtPriceCalc;
+        const sqrtPriceCalc = !!route?.swapXtoY
+          ? BigNumber.max(
+              rate.multipliedBy(route?.sqrtPrice).toFixed(0),
+              route?.minSqrtPriceHasLiquidity
+            )
+          : BigNumber.min(
+              rate.multipliedBy(route?.sqrtPrice).toFixed(0),
+              route?.maxSqrtPriceHasLiquidity
+            );
+        sqrtPrice = (
+          BigNumber(sqrtPriceCalc).isGreaterThan(MAX_SQRT_PRICE)
+            ? MAX_SQRT_PRICE
+            : BigNumber(sqrtPriceCalc).isLessThan(MIN_SQRT_PRICE)
+            ? MIN_SQRT_PRICE
+            : sqrtPriceCalc
+        ).toString();
       }
       const [firstPath] = await InitPath(
         coinTypeIn,
@@ -110,14 +120,26 @@ export const routeTxBuild = async (
       );
     }
     if (protocol === "DEEPBOOK") {
-      await SwapDeepBookHandle(
-        routeObject,
-        coinTypeIn,
-        coinTypeOut,
-        route.swapXtoY,
-        route.poolId,
-        tx
-      );
+      if (route.swapXtoY) {
+        await SwapDeepBookHandleV2(
+          routeObject,
+          coinTypeIn,
+          coinTypeOut,
+          route.swapXtoY,
+          route.poolId,
+          route.lotSize,
+          tx
+        );
+      } else {
+        await SwapDeepBookHandle(
+          routeObject,
+          coinTypeIn,
+          coinTypeOut,
+          route.swapXtoY,
+          route.poolId,
+          tx
+        );
+      }
     }
     const nextRoute = path.info.routes[routeIndex + 1];
     if (nextRoute) {
@@ -126,6 +148,8 @@ export const routeTxBuild = async (
         fee: feeTier,
         sqrtPrice: sqrtPriceLimit,
         swapXtoY,
+        minSqrtPriceHasLiquidity,
+        maxSqrtPriceHasLiquidity,
       } = nextRoute;
       // console.log('sqrtPriceLimit', sqrtPriceLimit.toString(), route.sqrtPrice.toString());
       let sqrtPrice = "0";
@@ -133,13 +157,22 @@ export const routeTxBuild = async (
         const rate = nextRoute?.swapXtoY
           ? BigNumber(1).minus(0.15)
           : BigNumber(1).plus(0.15);
-        const sqrtPriceCalc = rate.multipliedBy(sqrtPriceLimit).toFixed(0);
-        sqrtPrice = BigNumber(sqrtPriceCalc).isGreaterThan(MAX_SQRT_PRICE)
-          ? MAX_SQRT_PRICE
-          : BigNumber(sqrtPriceCalc).isLessThan(MIN_SQRT_PRICE)
-          ? MIN_SQRT_PRICE
-          : sqrtPriceCalc;
-        sqrtPrice = sqrtPriceCalc.toString();
+        const sqrtPriceCalc = !!swapXtoY
+          ? BigNumber.max(
+              rate.multipliedBy(sqrtPriceLimit).toFixed(0),
+              minSqrtPriceHasLiquidity
+            )
+          : BigNumber.min(
+              rate.multipliedBy(sqrtPriceLimit).toFixed(0),
+              maxSqrtPriceHasLiquidity
+            );
+        sqrtPrice = (
+          BigNumber(sqrtPriceCalc).isGreaterThan(MAX_SQRT_PRICE)
+            ? MAX_SQRT_PRICE
+            : BigNumber(sqrtPriceCalc).isLessThan(MIN_SQRT_PRICE)
+            ? MIN_SQRT_PRICE
+            : sqrtPriceCalc
+        ).toString();
       }
       // console.log("nextRoute", nextRoute);
       await NextRouting(

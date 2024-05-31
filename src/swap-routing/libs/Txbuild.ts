@@ -13,7 +13,8 @@ export const txBuild = async (
   amountOut: string,
   coinInType: string,
   account: string,
-  pathsAmountOut?: string[]
+  pathsAmountOut?: string[],
+  inspecTransaction?: boolean
 ) => {
   // console.log(
   //   "AA",
@@ -36,7 +37,9 @@ export const txBuild = async (
     account,
     amountIn,
     listAmountInDecimal,
-    coinInType
+    coinInType,
+    undefined,
+    inspecTransaction
   );
   // console.log("JJJJ", inspecTransaction, coinInType);
   for (const rateIndex in rates) {

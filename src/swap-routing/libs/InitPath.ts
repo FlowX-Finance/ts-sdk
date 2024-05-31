@@ -23,7 +23,7 @@ export const InitPath = async (
     return tx.moveCall({
       target: `${SWAP_V3.UNIVERSAL_ROUTER}::${MODULE.UNIVERSAL_ROUTER}::initialize_path`,
       typeArguments: [coinInType, coinOutType],
-      arguments: [coinInObject, tx.pure(feeTier), tx.pure(+sqrtPriceLimit)],
+      arguments: [coinInObject, tx.pure(feeTier), tx.pure(sqrtPriceLimit)],
     });
   } catch (error) {
     console.log("InitPath ERROR", error);

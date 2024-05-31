@@ -279,6 +279,9 @@ export class Route {
   tickIndex?: string;
   swapXtoY?: boolean;
   lpType?: string;
+  lotSize?: string | number;
+  maxSqrtPriceHasLiquidity?: string | number;
+  minSqrtPriceHasLiquidity?: string | number;
 }
 export interface ISmartPathV3 {
   info: {

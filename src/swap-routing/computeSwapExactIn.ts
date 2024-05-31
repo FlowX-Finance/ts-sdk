@@ -35,7 +35,9 @@ export const computeSwapExactIn = async (
         amountIn + "",
         amountOut + "",
         coinIn.type,
-        account
+        account,
+        undefined,
+        true
       );
       const estimateResult = await estimateGasFee(tx, account);
       // console.log("estimateResult", estimateResult);

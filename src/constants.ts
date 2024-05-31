@@ -1,8 +1,17 @@
 import { Connection, JsonRpcProvider } from "@mysten/sui.js";
 import { GraphQLClient } from "graphql-request";
 import { BigNumber } from "./BigNumber";
-import { TCachingRequest } from "./types";
+import { TCachingRequest, TSourceSmartRouting } from "./types";
 
+export const SOURCE_DEX: TSourceSmartRouting[] = [
+  "FLOWX_CLMM",
+  "FLOWX",
+  "CETUS",
+  "KRIYA",
+  "AFTERMATH",
+  "TURBOS",
+  "DEEPBOOK",
+];
 // //MAINNET
 export const client = (cache?: TCachingRequest) => {
   let config: any;
@@ -61,9 +70,11 @@ export const PACKAGE_OBJECT_ID =
   "0xba153169476e8c3114962261d1edc70de5ad9781b83cc617ecc8c1923191cae0";
 export const SWAP_V3 = {
   UNIVERSAL_ROUTER:
-    "0x91f3c8ae615e01f7fe2d548357f714eb2b4f6770138d12c5fd5a95a6833359fd",
+    "0xb2ed1dc638fc36ecefdb001245902aab209951faba737d57eb61905e14653554",
+  UNIVERSAL_ROUTER_LEGACY:
+    "0x8513d4a794b76bbb2af9e0181df2794ffbcac7b507764fd8dfe8585b3a2ed157",
   UNIVERSAL_TREASURY:
-    "0xcc88e1a4c3dd2c847e0a69e651f8ca7a38c8dc93e06106b50d29a4f783e15b77",
+    "0xd98689eb13b909329347a8155869b5cd4aa3536b250964d3281f0194088d5057",
 };
 export const ADD_LIQUIDITY_V3 = {
   POOL_REGISTRY_OBJ:

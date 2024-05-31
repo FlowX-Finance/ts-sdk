@@ -7,7 +7,8 @@ export const getSplitCoinForTx = async (
   amount: string,
   splits: string[],
   coinType: string,
-  inheritTx?: TransactionBlock
+  inheritTx?: TransactionBlock,
+  inspecTransaction?: boolean
 ): Promise<{
   tx: TransactionBlock;
   coinData: TransactionArgument & TransactionArgument[];
@@ -19,16 +20,27 @@ export const getSplitCoinForTx = async (
     amount,
     coinType
   );
+  let coinObjectId: any = objectIds[0];
   if (coinType === SUI_TYPE) {
     let pureAmount = [];
     for (const split of splits) {
       pureAmount.push(tx.pure(split));
     }
-    let coin = tx.splitCoins(tx.gas, pureAmount);
+    let coin;
+    if (inspecTransaction) {
+      if (objectIds.length > 1) {
+        tx.mergeCoins(
+          tx.object(coinObjectId),
+          objectIds.slice(1).map((item) => tx.object(item))
+        );
+      }
+      coin = tx.splitCoins(tx.object(coinObjectId), pureAmount);
+    } else {
+      coin = tx.splitCoins(tx.gas, pureAmount);
+    }
     return { tx, coinData: coin };
   }
   // console.log('objectIds', objectIds);
-  let coinObjectId: any = objectIds[0];
   if (objectIds.length > 1) {
     tx.mergeCoins(
       tx.object(coinObjectId),

@@ -26,7 +26,7 @@ export const estimateGasFee = async (
       .plus(gasUsed.storageCost)
       .toFixed();
     const listSwapTrans = Lodash.filter(result.events, {
-      type: `${SWAP_V3.UNIVERSAL_ROUTER}::${MODULE.UNIVERSAL_ROUTER}::Swap`,
+      type: `${SWAP_V3.UNIVERSAL_ROUTER_LEGACY}::${MODULE.UNIVERSAL_ROUTER}::Swap`,
     });
     // console.log('listSwapTrans', listSwapTrans);
     const amountOut = Lodash.reduce(
