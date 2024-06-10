@@ -6,8 +6,6 @@ export const NextRouting = async (
   coinOutType: string,
   nextRouteCoinOutType: string,
   routeObject: any,
-  nextRouteFeeTier: number,
-  nextRouteSqrtPrice: number,
   txb?: TransactionBlock
 ) => {
   try {
@@ -24,11 +22,7 @@ export const NextRouting = async (
     tx.moveCall({
       target: `${SWAP_V3.UNIVERSAL_ROUTER}::${MODULE.UNIVERSAL_ROUTER}::next`,
       typeArguments: [coinInType, coinOutType, nextRouteCoinOutType],
-      arguments: [
-        routeObject,
-        tx.pure(nextRouteFeeTier),
-        tx.pure(nextRouteSqrtPrice),
-      ],
+      arguments: [routeObject],
     });
   } catch (error) {
     console.log("NextRouting ERROR", error);

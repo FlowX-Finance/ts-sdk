@@ -11,8 +11,10 @@ import {
   FUNCTION,
   LP_DECIMAL,
   MAX_LIMIT_PER_RPC_CALL,
+  MODULE,
   SUI_FULL_TYPE,
   SUI_TYPE,
+  SWAP_V3,
   client,
   provider,
 } from "./constants";
@@ -424,7 +426,9 @@ export const initTxBlock = async (
       return isObject(param)
         ? param
         : getPureSerializationType(
-            functionDetails.exposedFunctions[functionName]["parameters"][i],
+            functionDetails.exposedFunctions[functionName]["parameters"][
+              i
+            ] as any,
             param
           )
         ? tx.pure(param)
@@ -571,4 +575,42 @@ export const createZeroCoin = (tx: TransactionBlock, coinType: string) => {
     typeArguments: [coinType],
   });
   return zeroCoin;
+};
+export const createOption = (tx: TransactionBlock, element?: string) => {
+  const [option] = tx.moveCall({
+    target: `0x1::option::${!!element ? "some" : "none"}`,
+    typeArguments: !!element ? ["address"] : [],
+    arguments: !!element ? [tx.pure(element, "address")] : [],
+  });
+  return option;
+};
+export const createPartnerOption = (
+  tx: TransactionBlock,
+  commissionType: number,
+  amount: string,
+  commissionOnInput: boolean,
+  address?: string
+) => {
+  let element = [];
+  if (address) {
+    const [newElement] = tx.moveCall({
+      target: `${SWAP_V3.UNIVERSAL_ROUTER}::${MODULE.COMMISSION}::new`,
+      typeArguments: [],
+      arguments: [
+        tx.pure(address, "address"),
+        tx.pure(commissionType),
+        tx.pure(amount),
+        tx.pure(commissionOnInput),
+      ],
+    });
+    if (!!newElement) element = [newElement];
+  }
+  const [option] = tx.moveCall({
+    target: `0x1::option::${
+      element.length > 0 && address.length > 0 ? "some" : "none"
+    }`,
+    typeArguments: [`${SWAP_V3.UNIVERSAL_ROUTER}::commission::Commission`],
+    arguments: element,
+  });
+  return option;
 };

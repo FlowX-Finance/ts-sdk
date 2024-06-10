@@ -9,6 +9,7 @@ export const SwapTurbosHandle = async (
   swapXtoY: boolean,
   poolId: string,
   feeTier: string | number,
+  sqrtPriceLimit: string,
   txb?: TransactionBlock
 ): Promise<TransactionArgument & TransactionArgument[]> => {
   let tx = new TransactionBlock();
@@ -34,6 +35,7 @@ export const SwapTurbosHandle = async (
     arguments: [
       routeObject,
       tx.object(poolId),
+      tx.pure(sqrtPriceLimit),
       tx.object(
         "0xf1cf0e81048df168ebeb1b8030fad24b3e0b53ae827c25053fff0779c1445b6f"
       ), //Version

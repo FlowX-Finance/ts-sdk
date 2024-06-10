@@ -18,7 +18,7 @@ export const handleGetCoinAmount = async (
     coinType
   );
   if (coinType === SUI_TYPE) {
-    return await getSuiCoinForTx(objectCoins, amount, tx);
+    return await getSuiCoinForTx(amount, tx);
   }
   //handle merge and split other coins
   let coinObjectId: any = objectIds[0];

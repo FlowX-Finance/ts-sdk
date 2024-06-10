@@ -1,6 +1,6 @@
-import { CoinMetadata, ISmartPathV3 } from "../types";
+import { CoinMetadata, IPartnerFee, ISmartPathV3 } from "../types";
 import { getBalanceAmount } from "../utils";
-import { BigNumber, BigNumber as BN } from "../BigNumber";
+import { BigNumb, BigNumber, BigNumber as BN } from "../BigNumber";
 import { estimateGasFee } from "./libs/EstimateGasFee";
 import { txBuild } from "./libs/Txbuild";
 import { TransactionBlock } from "@mysten/sui.js";
@@ -14,14 +14,15 @@ export const computeSwapExactIn = async (
   coinIn: CoinMetadata,
   coinOut: CoinMetadata,
   slippage: number,
-  account: string
+  account: string,
+  partnerFee?: IPartnerFee
 ): Promise<{
   gasFee: string;
   priceChange: boolean;
   totalAmountOutInspec: string;
   inRate: string;
   outRate: string;
-  tx: TransactionBlock;
+  tx: TransactionBlock | any;
   priceImpact: string;
 }> => {
   try {
@@ -29,30 +30,36 @@ export const computeSwapExactIn = async (
       paths.length > 0 &&
       BigNumber(coinIn.balance ?? 0).isGreaterThanOrEqualTo(amountIn)
     ) {
-      const tx = await txBuild(
-        paths,
+      const tokenIn = {
+        type: coinIn.type,
+        amount: BigNumb(amountIn).toFixed(),
+      };
+      const tokenOut = {
+        type: coinOut.type,
+        amount: BigNumb(amountOut).toFixed(),
+      };
+      const tx = await txBuild({
+        listSmartPath: paths,
         slippage,
-        amountIn + "",
-        amountOut + "",
-        coinIn.type,
+        tokenIn,
+        tokenOut,
         account,
-        undefined,
-        true
-      );
+        partnerFee,
+        inspecTransaction: true,
+      });
       const estimateResult = await estimateGasFee(tx, account);
       // console.log("estimateResult", estimateResult);
       if (estimateResult) {
-        const { fee, amountOut: amountOutDev, pathsAmountOut } = estimateResult;
+        const { fee, amountOut: amountOutDev } = estimateResult;
         let priceChange = false;
-        const txb = await txBuild(
-          paths,
+        const txb = await txBuild({
+          listSmartPath: paths,
           slippage,
-          amountIn.toString(),
-          amountOutDev,
-          coinIn.type,
+          tokenIn,
+          tokenOut: { ...tokenOut, amount: amountOutDev },
           account,
-          pathsAmountOut
-        );
+          partnerFee,
+        });
         const inAmountFormat = getBalanceAmount(
             amountIn,
             coinIn.decimals

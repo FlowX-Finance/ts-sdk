@@ -306,7 +306,6 @@ export interface ITradeRateItem {
 export interface IEstimateGasResult {
   fee: string;
   amountOut: string;
-  pathsAmountOut: string[];
 }
 export type TSourceSmartRouting =
   | "FLOWX"
@@ -484,4 +483,24 @@ export interface IGetClmmTicks {
   liquidityNet: string;
   pool: string;
   tick: number;
+}
+export interface IPartnerFee {
+  tokensType: string[];
+  partnerAddress: string;
+  percentage?: string;
+  fixAmount?: string;
+  commissionType: "input" | "output" | "tokensType";
+}
+export interface ITokenAmount {
+  type: string;
+  amount: string;
+}
+export interface ITxBuild {
+  listSmartPath: ISmartPathV3[];
+  slippage: number;
+  tokenIn: ITokenAmount;
+  tokenOut: ITokenAmount;
+  account: string;
+  partnerFee?: IPartnerFee;
+  inspecTransaction?: boolean;
 }

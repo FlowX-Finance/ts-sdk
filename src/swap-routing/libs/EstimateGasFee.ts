@@ -9,7 +9,7 @@ export const estimateGasFee = async (
   tx: TransactionBlock | any,
   account?: string
 ): Promise<IEstimateGasResult | undefined> => {
-  if (!account) return { fee: "0", amountOut: "0", pathsAmountOut: [] };
+  if (!account) return { fee: "0", amountOut: "0" };
   let suiPrice = "0";
   const coins: CoinMetadata[] = await getCoinsFlowX();
   suiPrice = Lodash.find(coins, { type: SUI_TYPE }).derivedPriceInUSD;
@@ -19,7 +19,7 @@ export const estimateGasFee = async (
     transactionBlock: tx,
   });
 
-  // console.log("%cEstimateGas", "color:cyan", account, result);
+  console.log("%cEstimateGas", "color:cyan", account, result);
   const gasUsed = result.effects.gasUsed;
   if (result.effects.status.status === "success") {
     let fee = BigNumber(gasUsed.computationCost)
@@ -41,7 +41,7 @@ export const estimateGasFee = async (
         .multipliedBy(getBalanceAmount(fee, SUI_DECIMALS))
         .toFixed(),
       amountOut: amountOut + "",
-      pathsAmountOut: listSwapTrans.map((i) => i.parsedJson.amount_out),
+      // pathsAmountOut: listSwapTrans.map((i) => i.parsedJson.amount_out),
     };
   }
   return;

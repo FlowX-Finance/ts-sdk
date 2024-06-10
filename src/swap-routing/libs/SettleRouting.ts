@@ -4,7 +4,7 @@ import { CLOCK_ID, FUNCTION, MODULE, SWAP_V3 } from "../../constants";
 export const SettleRouting = async (
   coinInType: string,
   coinOutType: string,
-  routeObject: any,
+  tradeObject: any,
   account: string,
   txb?: TransactionBlock
 ): Promise<TransactionArgument & TransactionArgument[]> => {
@@ -17,7 +17,8 @@ export const SettleRouting = async (
       typeArguments: [coinInType, coinOutType],
       arguments: [
         tx.object(SWAP_V3.UNIVERSAL_TREASURY),
-        routeObject,
+        tx.object(SWAP_V3.PARTNER_REGISTRY),
+        tradeObject,
         tx.object(CLOCK_ID),
       ],
     });

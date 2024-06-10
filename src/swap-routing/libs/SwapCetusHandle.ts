@@ -8,6 +8,7 @@ export const SwapCetusHandle = async (
   coinOutType: string,
   swapXtoY: boolean,
   poolId: string,
+  sqrtPriceLimit: string,
   txb?: TransactionBlock
 ): Promise<TransactionArgument & TransactionArgument[]> => {
   // console.log(
@@ -35,6 +36,7 @@ export const SwapCetusHandle = async (
         "0xdaa46292632c3c4d8f31f23ea0f9b36a28ff3677e9684980e4438403a67a3d8f"
       ), //Global config
       tx.object(poolId),
+      tx.pure(sqrtPriceLimit),
       tx.object(CLOCK_ID),
     ],
   });

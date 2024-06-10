@@ -1,34 +1,73 @@
 import axios from "axios";
-import { BigNumber } from "../BigNumber";
-import { ISmartRouting, Route, TSourceSmartRouting } from "../types";
+import { BigNumb, BigNumber } from "../BigNumber";
+import {
+  IPartnerFee,
+  ISmartRouting,
+  Route,
+  TSourceSmartRouting,
+} from "../types";
 import { standardizeType } from "../utils";
 import { normalizeStructTag } from "@mysten/sui.js";
 import { SOURCE_DEX } from "../constants";
 import JsonBigInt from "json-bigint";
+import { getFeeInfoUrl } from "../swap/libs/getFeeInfoUrl";
 
-export const getSmartRouting = async (
-  tokenIn: string,
-  tokenOut: string,
-  amountIn: string,
-  signal: any,
-  insludeSource: boolean,
-  source?: TSourceSmartRouting[]
-): Promise<ISmartRouting> => {
+interface IGetSmartRouting {
+  coinInType: string;
+  coinOutType: string;
+  amountIn: string;
+  signal: any;
+  insludeSource: boolean;
+  source?: TSourceSmartRouting[];
+  partnerFee?: IPartnerFee;
+}
+export const getSmartRouting = async ({
+  coinInType,
+  coinOutType,
+  amountIn,
+  signal,
+  insludeSource,
+  source,
+  partnerFee,
+}: IGetSmartRouting): Promise<ISmartRouting> => {
   try {
+    // console.log("getSmartRouting", coinInType, coinOutType);
     const excludeList = SOURCE_DEX.filter(
       (item) => !(source ?? SOURCE_DEX).includes(item)
     );
+    // let response = await axios.get(
+    //   `https://api.flowx.finance/flowx-ag-routing/api/v1/quote?tokenIn=${normalizeStructTag(
+    //     tokenIn
+    //   )}&tokenOut=${normalizeStructTag(tokenOut)}&amountIn=${amountIn}${
+    //     source?.length > 0 && insludeSource
+    //       ? `&includeSources=${source.join(",")}`
+    //       : excludeList?.length > 0
+    //       ? `&excludeSources=${excludeList.join(",")}`
+    //       : ""
+    //   }${
+    //     fee
+    //       ? `&feeToken=${normalizeStructTag(fee.percentage)}${
+    //           fee?.fixAmount ? `&feeAmount=${fee?.fixAmount}` : ""
+    //         }${
+    //           +fee.percentage > 0
+    //             ? `&feeInBps=${BigNumb(fee.percentage)
+    //                 .div(100)
+    //                 .multipliedBy(10000)}`
+    //             : ""
+    //         }`
+    //       : ""
+    //   }`,
+    const info = getFeeInfoUrl(coinInType, coinOutType, partnerFee);
     let response = await axios.get(
       `https://api.flowx.finance/flowx-ag-routing/api/v1/quote?tokenIn=${normalizeStructTag(
-        tokenIn
-      )}&tokenOut=${normalizeStructTag(tokenOut)}&amountIn=${amountIn}${
+        coinInType
+      )}&tokenOut=${normalizeStructTag(coinOutType)}&amountIn=${amountIn}${
         source?.length > 0 && insludeSource
           ? `&includeSources=${source.join(",")}`
           : excludeList?.length > 0
           ? `&excludeSources=${excludeList.join(",")}`
           : ""
-      }`,
-      // `https://flowx-dev.flowx.finance/flowx-ag-routing/api/v1/quote?tokenIn=${tokenIn}&tokenOut=${tokenOut}&amountIn=${amountIn}`,
+      }${info.url}`,
       {
         signal,
         transformResponse: [

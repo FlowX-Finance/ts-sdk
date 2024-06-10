@@ -26,6 +26,8 @@ export const SwapV3Handle = async (
   routeObject: any,
   coinInType: string,
   coinOutType: string,
+  feeRate: string,
+  sqrtPriceLimit: string,
   txb?: TransactionBlock
 ): Promise<TransactionArgument & TransactionArgument[]> => {
   let tx = new TransactionBlock();
@@ -36,6 +38,8 @@ export const SwapV3Handle = async (
     arguments: [
       routeObject,
       tx.object(ADD_LIQUIDITY_V3.POOL_REGISTRY_OBJ),
+      tx.pure(feeRate),
+      tx.pure(sqrtPriceLimit),
       tx.object(ADD_LIQUIDITY_V3.VERSIONED_OBJ),
       tx.object(CLOCK_ID),
     ],
