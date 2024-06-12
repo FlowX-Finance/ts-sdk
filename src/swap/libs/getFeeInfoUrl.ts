@@ -1,4 +1,4 @@
-import { normalizeStructTag } from "@mysten/sui.js";
+import { normalizeStructTag } from "@mysten/sui/utils";
 import { IPartnerFee } from "../../types";
 import { BigNumb } from "../../BigNumber";
 

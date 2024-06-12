@@ -1,4 +1,4 @@
-import { TransactionBlock } from "@mysten/sui.js";
+import { Transaction } from "@mysten/sui/transactions";
 import { BigNumb } from "../BigNumber";
 import {
   CLOCK_ID,
@@ -55,9 +55,9 @@ const getArgsSwapExactInput = async (
       tx.object(CLOCK_ID),
       tx.object(CONTAINER_OBJECT_ID),
       isObject(coinObjectId) ? coinObjectId : tx.object(coinObjectId),
-      tx.pure(+amountOutMin),
-      tx.pure(recipient || account),
-      tx.pure(estimateDealine()),
+      tx.pure.u64(+amountOutMin),
+      tx.pure.u64(recipient || account),
+      tx.pure.u64(estimateDealine()),
     ],
     callFunction: getSwapFunction(trades, true),
   };
@@ -94,20 +94,20 @@ const getArgsSwapExactOutput = async (
       tx.object(CLOCK_ID),
       tx.object(CONTAINER_OBJECT_ID),
       isObject(coinObjectId) ? coinObjectId : tx.object(coinObjectId),
-      tx.pure(+amountInMax),
-      tx.pure(+amountOut),
-      tx.pure(recipient || account),
-      tx.pure(estimateDealine()),
+      tx.pure.u64(+amountInMax),
+      tx.pure.u64(+amountOut),
+      tx.pure.address(recipient || account),
+      tx.pure.u64(estimateDealine()),
     ],
     callFunction: getSwapFunction(trades, false),
   };
 };
 const swap = async (
-  tx: TransactionBlock,
+  tx: Transaction,
   typeArguments: string[],
   args: any[],
   callFunction: string
-): Promise<TransactionBlock> => {
+): Promise<Transaction> => {
   tx.moveCall({
     target: `${PACKAGE_OBJECT_ID}::router::${callFunction}`,
     arguments: args,

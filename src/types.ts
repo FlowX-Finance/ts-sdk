@@ -1,4 +1,4 @@
-import { TransactionBlock } from "@mysten/sui.js";
+import { Transaction } from "@mysten/sui/transactions";
 import BigNumber from "bignumber.js";
 
 export interface PairStats {
@@ -245,7 +245,7 @@ export type SmartRoute = {
 export interface SwapArgs {
   typeArguments: string[];
   args: any[];
-  tx: TransactionBlock;
+  tx: Transaction;
   callFunction: string;
 }
 export interface ICalcAmountExact {

@@ -1,4 +1,4 @@
-import { TransactionBlock } from "@mysten/sui.js";
+import { Transaction } from "@mysten/sui/transactions";
 import { ISmartPathV3, Route } from "../../types";
 import { standardizeType } from "../../utils";
 import { BigNumber } from "../../BigNumber";
@@ -15,7 +15,7 @@ import { NextRouting } from "./NextRouting";
 
 export const routeTxBuild = async (
   route: Route,
-  tx: TransactionBlock,
+  tx: Transaction,
   routeObject: any,
   routeIndex: number,
   path: ISmartPathV3,

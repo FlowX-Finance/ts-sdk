@@ -1,4 +1,4 @@
-import { TransactionBlock } from "@mysten/sui.js";
+import { Transaction } from "@mysten/sui/transactions";
 import { MODULE, SWAP_V3 } from "../../constants";
 
 export const NextRouting = async (
@@ -6,10 +6,10 @@ export const NextRouting = async (
   coinOutType: string,
   nextRouteCoinOutType: string,
   routeObject: any,
-  txb?: TransactionBlock
+  txb?: Transaction
 ) => {
   try {
-    let tx = new TransactionBlock();
+    let tx = new Transaction();
     if (txb) tx = txb;
     // console.log(
     //   "NextRouting",

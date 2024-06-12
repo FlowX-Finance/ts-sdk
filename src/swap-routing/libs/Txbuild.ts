@@ -1,4 +1,4 @@
-import { TransactionBlock } from "@mysten/sui.js";
+import { Transaction } from "@mysten/sui/transactions";
 import { BigNumber } from "../../BigNumber";
 import Lodash from "../../lodash";
 import { ISmartPathV3, ITxBuild } from "../../types";

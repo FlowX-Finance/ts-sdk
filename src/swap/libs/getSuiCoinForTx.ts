@@ -1,12 +1,11 @@
 import {
-  CoinStruct,
-  TransactionArgument,
-  TransactionBlock,
-} from "@mysten/sui.js";
+  Transaction,
+  TransactionResult,
+} from "@mysten/sui/transactions";
 
 export const getSuiCoinForTx = async (
   amount: string | number,
-  tx: TransactionBlock
-): Promise<{ tx: TransactionBlock; coin: string | TransactionArgument }> => {
-  return { tx, coin: tx.splitCoins(tx.gas, [tx.pure(amount)]) };
+  tx: Transaction
+): Promise<{ tx: Transaction; coin: TransactionResult }> => {
+  return { tx, coin: tx.splitCoins(tx.gas, [amount]) };
 };

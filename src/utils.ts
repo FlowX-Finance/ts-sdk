@@ -1,12 +1,13 @@
 import {
-  JsonRpcProvider,
+  SuiClient,
   PaginatedObjectsResponse,
   SuiObjectDataFilter,
   SuiObjectDataOptions,
   SuiObjectResponse,
-  TransactionBlock,
-  getPureSerializationType,
-} from "@mysten/sui.js";
+} from "@mysten/sui/client";
+import {
+  Transaction,
+} from "@mysten/sui/transactions";
 import {
   FUNCTION,
   LP_DECIMAL,
@@ -36,7 +37,6 @@ import {
   GET_PAIRS,
   GET_PAIR_RANKING_INFO,
 } from "./queries";
-import { isObject } from "lodash";
 
 export const nowInMilliseconds = () => {
   return Date.now();
@@ -57,13 +57,13 @@ export function last<T>(collections: T[]) {
 export const fetchOwnedObjects = async (
   owner: string,
   objectType: string,
-  jsonRpcProvider: JsonRpcProvider
+  suiClient: SuiClient
 ) => {
   let cursor = null,
     hasNextPage = false,
     objects = [];
   do {
-    const res = await jsonRpcProvider.getOwnedObjects({
+    const res = await suiClient.getOwnedObjects({
       owner,
       cursor,
       limit: MAX_LIMIT_PER_RPC_CALL,
@@ -404,49 +404,6 @@ export const getBasicData = async (
     poolInfos,
   };
 };
-export const initTxBlock = async (
-  packageId: string,
-  moduleName: string,
-  functionName: string,
-  params: any[],
-  types?: string[],
-  tx?: TransactionBlock
-): Promise<any> => {
-  if (!tx) {
-    tx = new TransactionBlock();
-  }
-
-  const functionDetails = await provider.getNormalizedMoveModule({
-    package: packageId,
-    module: moduleName,
-  });
-
-  const args: any =
-    params?.map((param: any, i: number) => {
-      return isObject(param)
-        ? param
-        : getPureSerializationType(
-            functionDetails.exposedFunctions[functionName]["parameters"][
-              i
-            ] as any,
-            param
-          )
-        ? tx.pure(param)
-        : tx.object(param);
-    }) ?? [];
-  tx.moveCall({
-    target: `${packageId}::${moduleName}::${functionName}`,
-    typeArguments: types ?? [],
-    arguments: args,
-  });
-
-  // tx.moveCall({
-  //   target: `$0x2::coin::zero`,
-  //   typeArguments: types ?? [],
-  //   arguments: args,
-  // });
-  return tx;
-};
 export const getPairsRankingFlowX = async (): Promise<any> => {
   try {
     const res: any = await client().request(GET_PAIR_RANKING_INFO, {
@@ -569,23 +526,23 @@ export const getFullyDynamicFields = async (id: string) => {
   } while (!!hasNextPage);
   return dynamicFieldObjects;
 };
-export const createZeroCoin = (tx: TransactionBlock, coinType: string) => {
+export const createZeroCoin = (tx: Transaction, coinType: string) => {
   const [zeroCoin] = tx.moveCall({
     target: `0x2::coin::zero`,
     typeArguments: [coinType],
   });
   return zeroCoin;
 };
-export const createOption = (tx: TransactionBlock, element?: string) => {
+export const createOption = (tx: Transaction, element?: string) => {
   const [option] = tx.moveCall({
     target: `0x1::option::${!!element ? "some" : "none"}`,
     typeArguments: !!element ? ["address"] : [],
-    arguments: !!element ? [tx.pure(element, "address")] : [],
+    arguments: !!element ? [tx.pure.address(element)] : [],
   });
   return option;
 };
 export const createPartnerOption = (
-  tx: TransactionBlock,
+  tx: Transaction,
   commissionType: number,
   amount: string,
   commissionOnInput: boolean,
@@ -597,10 +554,10 @@ export const createPartnerOption = (
       target: `${SWAP_V3.UNIVERSAL_ROUTER}::${MODULE.COMMISSION}::new`,
       typeArguments: [],
       arguments: [
-        tx.pure(address, "address"),
-        tx.pure(commissionType),
-        tx.pure(amount),
-        tx.pure(commissionOnInput),
+        tx.pure.address(address),
+        tx.pure.u8(commissionType),
+        tx.pure.u64(amount),
+        tx.pure.bool(commissionOnInput),
       ],
     });
     if (!!newElement) element = [newElement];

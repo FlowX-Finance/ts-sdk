@@ -1,4 +1,4 @@
-import {normalizeStructTag} from '@mysten/sui.js';
+import {normalizeStructTag} from '@mysten/sui/utils';
 
 const EQUAL = 0;
 const LESS_THAN = 1;

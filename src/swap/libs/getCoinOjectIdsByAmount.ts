@@ -1,4 +1,4 @@
-import { CoinStruct, PaginatedCoins } from "@mysten/sui.js";
+import { CoinStruct, PaginatedCoins } from "@mysten/sui/client";
 import { provider } from "../../constants";
 import { orderByKey } from "../../utils";
 import { BigNumb } from "../../BigNumber";

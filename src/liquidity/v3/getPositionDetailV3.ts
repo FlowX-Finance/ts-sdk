@@ -4,7 +4,7 @@ import { POSITION_LIQUID_V3_TYPE, provider } from "../../constants";
 import { asIntN } from "./utils";
 import { BigNumb } from "../../BigNumber";
 import { BN } from "bn.js";
-import { TransactionBlock } from "@mysten/sui.js";
+import { Transaction } from "@mysten/sui/transactions";
 import { getTxCollectLiquidV3 } from "./getTxCollectLiquidV3";
 import { getTxCollectRewardLiquidV3 } from "./getTxCollectRewardLiquidV3";
 import { getClmmPoolDetail } from "./queries/getClmmPoolDetail";
@@ -25,6 +25,7 @@ import {
   getFullyOwnedObjects,
   standardizeType,
 } from "../../utils";
+import { SuiEvent } from "@mysten/sui/dist/cjs/client";
 
 const MAX_CALL_DETAIL = 5;
 const getDataHistory = async (
@@ -282,7 +283,7 @@ export const getPositionDetailV3 = async (
         //fetch user reward
         // console.log(' detailData.reward', detailData.reward);
         if (+ownedPosdata?.liquidity > 0) {
-          const tx = new TransactionBlock();
+          const tx = new Transaction();
           getTxCollectLiquidV3(coinX, coinY, positionObjectId, account, tx);
           const reward_infos = poolFields?.reward_infos ?? [];
           reward_infos.forEach((item: any) => {
@@ -308,22 +309,22 @@ export const getPositionDetailV3 = async (
               (i) =>
                 i.type.includes("::pool::Collect") &&
                 !i.type.includes("::pool::CollectPoolReward")
-            ),
+            ) as SuiEvent & { parsedJson: any},
             collectPoolReward = result.events.filter((i) =>
               i.type.includes("::pool::CollectPoolReward")
             ),
-            rewardX = collectEvent.parsedJson.amount_x,
+            rewardX = collectEvent.parsedJson  .amount_x,
             rewardY = collectEvent.parsedJson.amount_y,
             incentiveReward = collectPoolReward.filter(
-              (item) => item?.parsedJson?.position_id === positionObjectId
+              (item) => (item?.parsedJson as any)?.position_id === positionObjectId
             );
           detailData.poolReward = incentiveReward.map((item) => {
             return {
-              amount: item.parsedJson.amount,
+              amount: (item.parsedJson as any).amount,
               coin: coins.find(
                 (coin) =>
                   standardizeType(coin.type) ===
-                  standardizeType(item.parsedJson.reward_coin_type.name)
+                  standardizeType((item.parsedJson as any).reward_coin_type.name)
               ),
             };
           });

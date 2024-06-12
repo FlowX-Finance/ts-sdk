@@ -1,3 +1,4 @@
+import { Transaction } from "@mysten/sui/dist/cjs/transactions";
 import { BigNumb } from "../BigNumber";
 import {
   CLOCK_ID,
@@ -27,7 +28,6 @@ import {
   getBalanceAmount,
   getCoinsFlowX,
   getPairsRankingFlowX,
-  initTxBlock,
   getPoolInfos,
   standardizeType,
   getLpPrice,
@@ -101,14 +101,20 @@ export const getFaas = async (account?: string): Promise<IFaasData[]> => {
           ).type ?? SUI_TYPE,
         ];
         let params = [FAAS_STATE_OBJECT, +poolIndex, CLOCK_ID];
-        const tx = await initTxBlock(
-          FAAS_PACKAGE_OBJECT,
-          "fetcher",
-          "fetch_pending_reward",
-          params,
+        const tx = new Transaction();
+
+        tx.moveCall({
+          package: FAAS_PACKAGE_OBJECT,
+          module: "fetcher",
+          function: "fetch_pending_reward",
           typeArguments,
-          undefined
-        );
+          arguments: [
+            tx.object(FAAS_STATE_OBJECT),
+            tx.pure.u64(poolIndex),
+            tx.object(CLOCK_ID),
+          ],
+        })
+
         const result = await provider.devInspectTransactionBlock({
           sender: account,
           transactionBlock: tx,
@@ -118,11 +124,11 @@ export const getFaas = async (account?: string): Promise<IFaasData[]> => {
             const amount =
               item.type === FLX_TYPE
                 ? getBalanceAmount(
-                    result.events[0].parsedJson.flx_reward_amount,
+                    (result.events[0].parsedJson as any).flx_reward_amount,
                     FLX_DECIMAL
                   ).toFixed()
                 : getBalanceAmount(
-                    result.events[0].parsedJson.token_reward_amount,
+                    (result.events[0].parsedJson as any).token_reward_amount,
                     coins.find((item: CoinMetadata) => item.type === tokenType)
                       .decimals
                   ).toFixed();
@@ -355,18 +361,21 @@ export const getFaasV2 = async (account?: string): Promise<IFaasV2[]> => {
               ? listReward[idxCustomRewardCoin].type
               : SUI_TYPE,
           ];
-          let params = [
-            FAAS_STATE_OBJECT_V2,
-            (accountStaked.data as any)?.objectId,
-            CLOCK_ID,
-          ];
-          const tx = await initTxBlock(
-            FAAS_PACKAGE_OBJECT_V2,
-            "fetcher",
-            "fetch_pending_reward",
-            params,
-            typeArguments
-          );
+          const tx = new Transaction();
+
+          tx.moveCall({
+            package: FAAS_PACKAGE_OBJECT_V2,
+            module: "fetcher",
+            function: "fetch_pending_reward",
+            typeArguments,
+            arguments: [
+              tx.object(FAAS_STATE_OBJECT_V2),
+              tx.object((accountStaked.data as any)?.objectId),
+              tx.object(CLOCK_ID),
+            ],
+
+          })
+
           const result = await provider.devInspectTransactionBlock({
             sender: account,
             transactionBlock: tx,
@@ -376,8 +385,8 @@ export const getFaasV2 = async (account?: string): Promise<IFaasV2[]> => {
             pendingRw = listReward.map((item: CoinMetadata) => {
               const amount =
                 item.type === FLX_TYPE
-                  ? result.events[0].parsedJson.flx_reward_amount
-                  : result.events[0].parsedJson.token_reward_amount;
+                  ? (result.events[0].parsedJson as any).flx_reward_amount
+                  : (result.events[0].parsedJson as any).token_reward_amount;
               return {
                 token: item,
                 amount,

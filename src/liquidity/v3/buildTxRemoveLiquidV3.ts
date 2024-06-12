@@ -1,4 +1,4 @@
-import { TransactionBlock } from "@mysten/sui.js";
+import { Transaction } from "@mysten/sui/transactions";
 import { Amount, CoinMetadata, IPoolRewardV3 } from "../../types";
 import { getTxDecreasePositionLiquidV3 } from "./getTxDecreasePositionLiquidV3";
 import { BigNumb } from "../../BigNumber";
@@ -17,8 +17,8 @@ export const buildTxRemoveLiquidV3 = async (
   account: string,
   poolReward: IPoolRewardV3[],
   removeAll?: boolean
-): Promise<TransactionBlock> => {
-  let tx = new TransactionBlock();
+): Promise<Transaction> => {
+  let tx = new Transaction();
   const amountXDecimal = BigNumb(getDecimalAmount(amountX, coinX.decimals))
     .integerValue()
     .toString();

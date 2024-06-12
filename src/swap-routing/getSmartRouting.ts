@@ -7,7 +7,7 @@ import {
   TSourceSmartRouting,
 } from "../types";
 import { standardizeType } from "../utils";
-import { normalizeStructTag } from "@mysten/sui.js";
+import { normalizeStructTag } from "@mysten/sui/utils";
 import { SOURCE_DEX } from "../constants";
 import JsonBigInt from "json-bigint";
 import { getFeeInfoUrl } from "../swap/libs/getFeeInfoUrl";
