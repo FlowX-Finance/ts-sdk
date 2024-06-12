@@ -1,7 +1,7 @@
 import { POSITION_LIQUID_V3_TYPE, provider } from "../../constants";
 
 import { BigNumb } from "../../BigNumber";
-import { TransactionBlock } from "@mysten/sui.js";
+import { Transaction } from "@mysten/sui/transactions";
 import { ClmmPoolUtil, TickMath } from "./math";
 import { asIntN } from "./utils";
 import { BN } from "bn.js";
@@ -33,7 +33,7 @@ export const getUserLiquidityV3 = async (
     ];
     const poolInfos = await getFullyMultiObject(listPool);
     let positionInfo: IUserLiquidV3Position[] = [];
-    const tx = new TransactionBlock();
+    const tx = new Transaction();
     for (let i = 0; i < ownedPosition.length; i++) {
       const { content, objectId } = ownedPosition[i].data;
       const {
@@ -183,25 +183,25 @@ export const getUserLiquidityV3 = async (
       );
       for (let i = 0; i < positionInfo.length; i++) {
         const index = collectEvent.findIndex(
-          (item) => item.parsedJson.position_id === positionInfo[i].id
+          (item) => (item.parsedJson as any).position_id === positionInfo[i].id
         );
         const incentiveReward = collectPoolReward.filter(
-          (item) => item?.parsedJson?.position_id === positionInfo[i].id
+          (item) => (item?.parsedJson as any)?.position_id === positionInfo[i].id
         );
         if (index > -1) {
           positionInfo[i].reward = {
-            rewardX: collectEvent[index].parsedJson.amount_x,
-            rewardY: collectEvent[index].parsedJson.amount_y,
+            rewardX: (collectEvent[index].parsedJson as any).amount_x,
+            rewardY: (collectEvent[index].parsedJson as any).amount_y,
           };
         }
         if (incentiveReward.length > 0) {
           positionInfo[i].poolReward = incentiveReward.map((item) => {
             return {
-              amount: item.parsedJson.amount,
+              amount: (item.parsedJson as any).amount,
               coin: coins.find(
                 (coin) =>
                   standardizeType(coin.type) ===
-                  standardizeType(item.parsedJson.reward_coin_type.name)
+                  standardizeType((item.parsedJson as any).reward_coin_type.name)
               ),
             };
           });

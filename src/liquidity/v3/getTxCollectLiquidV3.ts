@@ -1,4 +1,4 @@
-import { TransactionBlock } from "@mysten/sui.js";
+import { Transaction } from "@mysten/sui/transactions";
 import {
   ADD_LIQUIDITY_V3,
   CLOCK_ID,
@@ -13,23 +13,23 @@ export const getTxCollectLiquidV3 = async (
   coinY: CoinMetadata,
   positionObjectId: string,
   account: string,
-  inheritTx?: TransactionBlock,
+  inheritTx?: Transaction,
   amountX?: string,
   amountY?: string
 ) => {
-  const tx = inheritTx ?? new TransactionBlock();
+  const tx = inheritTx ?? new Transaction();
   const [coinXOut, coinYOut] = tx.moveCall({
     target: `${ADD_LIQUIDITY_V3.CLMM_PACKAGE}::${MODULE.POSITION_MANAGER}::${FUNCTION.COLLECT}`,
     typeArguments: [coinX.type, coinY.type],
     arguments: [
       tx.object(ADD_LIQUIDITY_V3.POOL_REGISTRY_OBJ),
       tx.object(positionObjectId),
-      tx.pure(amountX ?? MAXU64),
-      tx.pure(amountY ?? MAXU64),
+      tx.pure.u64(amountX ?? MAXU64),
+      tx.pure.u64(amountY ?? MAXU64),
       tx.object(ADD_LIQUIDITY_V3.VERSIONED_OBJ),
       tx.object(CLOCK_ID),
     ],
   });
-  tx.transferObjects([coinXOut, coinYOut], tx.pure(account));
+  tx.transferObjects([coinXOut, coinYOut], account);
   return tx;
 };

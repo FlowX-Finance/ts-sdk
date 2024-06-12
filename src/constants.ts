@@ -1,4 +1,4 @@
-import { Connection, JsonRpcProvider } from "@mysten/sui.js";
+import { SuiClient } from "@mysten/sui/client";
 import { GraphQLClient } from "graphql-request";
 import { BigNumber } from "./BigNumber";
 import { TCachingRequest, TSourceSmartRouting } from "./types";
@@ -22,8 +22,8 @@ export const client = (cache?: TCachingRequest) => {
   );
 };
 
-export const provider = new JsonRpcProvider(
-  new Connection({ fullnode: "https://fullnode.mainnet.sui.io/" })
+export const provider = new SuiClient(
+  { url: "https://fullnode.mainnet.sui.io/" }
 );
 
 export const MAX_ROUTE_HOPS = 4;
@@ -87,7 +87,7 @@ export const SWAP_V3 = {
     "0x1efc1043577126103876562c35018ca4f799bde6553f936aa15af5af52962a28",
   PARTNER_REGISTRY:
     "0x1a294f8e4d523ccb7d4b14dcc10f987de01925cd35e7a2d738518b82074835e2",
-};
+} as const;
 export const ADD_LIQUIDITY_V3 = {
   POOL_REGISTRY_OBJ:
     "0x27565d24a4cd51127ac90e4074a841bbe356cca7bf5759ddc14a975be1632abc",
@@ -97,7 +97,7 @@ export const ADD_LIQUIDITY_V3 = {
     "0x7dffe3229d675645564273aa68c67406b6a80aa29e245ac78283acd7ed5e4912",
   VERSIONED_OBJ:
     "0x67624a1533b5aff5d0dfcf5e598684350efd38134d2d245f475524c03a64e656",
-};
+} as const;
 export const FUNCTION = {
   ADD_LIQUIDITY: "add_liquidity",
   ZAP_IN: "zap_in",
@@ -166,7 +166,7 @@ export const FUNCTION = {
   FLOWX_SWAP_CLMM: "flowx_clmm_swap_exact_input",
   CHECK_DEALINE: "check_deadline",
   CHECK_AMOUNT_THRESHOLD: "check_amount_threshold",
-};
+} as const;
 export const MODULE = {
   ROUTER: "router",
   ROUTER_V2: "router_v2",
@@ -190,7 +190,7 @@ export const MODULE = {
   SWAP_ROUTER: "swap_router",
   UNIVERSAL_ROUTER: "universal_router",
   COMMISSION: "commission",
-};
+} as const;
 export const POSITION_LIQUID_V3_TYPE = `${ADD_LIQUIDITY_V3.CLMM_PACKAGE}::position::Position`;
 /**
  * The maximum tick index supported by the clmmpool program.
@@ -226,7 +226,7 @@ export const MAXU64 = "18446744073709551615";
 
 // TESTNET;
 // import BigNumber from "bignumber.js";
-// import { Connection, JsonRpcProvider } from "@mysten/sui.js";
+// import { Connection, JsonRpcProvider } from "@mysten/sui";
 // import { GraphQLClient } from "graphql-request";
 
 // export const client = new GraphQLClient(

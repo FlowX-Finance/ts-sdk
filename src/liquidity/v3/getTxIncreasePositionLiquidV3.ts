@@ -1,4 +1,4 @@
-import { TransactionBlock } from "@mysten/sui.js";
+import { Transaction } from "@mysten/sui/transactions";
 import { handleGetCoinAmount } from "../../swap/libs/handleGetCoinAmount";
 import { CoinMetadata } from "../../types";
 import { createZeroCoin, getDecimalAmount } from "../../utils";
@@ -19,7 +19,7 @@ export const getTxIncreasePositionLiquidV3 = async (
   account: string,
   positionObject: string | any,
   slippage: string,
-  tx: TransactionBlock
+  tx: Transaction
 ) => {
   const amountDecimalX = getDecimalAmount(amountX, coinX.decimals);
   const amountDecimalY = getDecimalAmount(amountY, coinY.decimals);
@@ -54,21 +54,21 @@ export const getTxIncreasePositionLiquidV3 = async (
         : !!coinObjectY
         ? tx.object(coinObjectY as any)
         : createZeroCoin(tx, coinY.type),
-      tx.pure(
+      tx.pure.u64(
         BigNumb(1)
           .minus(slippage)
           .multipliedBy(amountDecimalX)
           .integerValue()
           .toString()
       ),
-      tx.pure(
+      tx.pure.u64(
         BigNumb(1)
           .minus(slippage)
           .multipliedBy(amountDecimalY)
           .integerValue()
           .toString()
       ),
-      tx.pure(Number.MAX_SAFE_INTEGER),
+      tx.pure.u64(Number.MAX_SAFE_INTEGER),
       tx.object(ADD_LIQUIDITY_V3.VERSIONED_OBJ),
       tx.object(CLOCK_ID),
     ],

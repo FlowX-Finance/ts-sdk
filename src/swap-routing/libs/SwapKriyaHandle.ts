@@ -1,4 +1,4 @@
-import { TransactionArgument, TransactionBlock } from "@mysten/sui.js";
+import { TransactionResult, Transaction } from "@mysten/sui/transactions";
 import { MODULE, SWAP_V3 } from "../../constants";
 
 export const SwapKriyaHandle = async (
@@ -7,9 +7,9 @@ export const SwapKriyaHandle = async (
   coinOutType: string,
   swapXtoY: boolean,
   poolId: string,
-  txb?: TransactionBlock
-): Promise<TransactionArgument & TransactionArgument[]> => {
-  let tx = new TransactionBlock();
+  txb?: Transaction
+): Promise<TransactionResult> => {
+  let tx = new Transaction();
   if (txb) tx = txb;
   return tx.moveCall({
     target: `${SWAP_V3.UNIVERSAL_ROUTER}::${MODULE.UNIVERSAL_ROUTER}::${

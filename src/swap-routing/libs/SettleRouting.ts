@@ -1,4 +1,4 @@
-import { TransactionArgument, TransactionBlock } from "@mysten/sui.js";
+import { TransactionResult, Transaction } from "@mysten/sui/transactions";
 import { CLOCK_ID, FUNCTION, MODULE, SWAP_V3 } from "../../constants";
 
 export const SettleRouting = async (
@@ -6,10 +6,10 @@ export const SettleRouting = async (
   coinOutType: string,
   tradeObject: any,
   account: string,
-  txb?: TransactionBlock
-): Promise<TransactionArgument & TransactionArgument[]> => {
+  txb?: Transaction
+): Promise<TransactionResult> => {
   try {
-    let tx = new TransactionBlock();
+    let tx = new Transaction();
     if (txb) tx = txb;
     // console.log("SettleRouting", coinInType, coinOutType);
     const [coinYObject] = tx.moveCall({
@@ -22,7 +22,7 @@ export const SettleRouting = async (
         tx.object(CLOCK_ID),
       ],
     });
-    return tx.transferObjects([coinYObject], tx.pure(account));
+    return tx.transferObjects([coinYObject], account);
   } catch (error) {
     console.log("SettleRouting ERROR", error);
   }

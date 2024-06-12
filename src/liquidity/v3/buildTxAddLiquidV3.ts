@@ -1,4 +1,4 @@
-import { TransactionBlock } from "@mysten/sui.js";
+import { Transaction } from "@mysten/sui/transactions";
 import { ADD_LIQUIDITY_V3, provider } from "../../constants";
 import { CoinMetadata, IFeeTierV3 } from "../../types";
 import { getTxIncreasePositionLiquidV3 } from "./getTxIncreasePositionLiquidV3";
@@ -7,13 +7,13 @@ import { getTxOpenPositionLiquidV3 } from "./getTxOpenPositionLiquidV3";
 import { getListPoolLiquidV3 } from "./getListPoolLiquidV3";
 import { asIntN } from "./utils";
 
-const getI32Object = (tickIndex: number, tx: TransactionBlock) => {
+const getI32Object = (tickIndex: number, tx: Transaction) => {
   return tx.moveCall({
-    target: `${ADD_LIQUIDITY_V3.CLMM_PACKAGE}::i3z2::${
+    target: `${ADD_LIQUIDITY_V3.CLMM_PACKAGE}::i32::${
       tickIndex < 0 ? "neg_from" : "from"
     }`,
     typeArguments: [],
-    arguments: [tx.pure(Math.abs(tickIndex))],
+    arguments: [tx.pure.u32(Math.abs(tickIndex))],
   });
 };
 
@@ -28,7 +28,7 @@ export const buildTxAddLiquidV3 = async (
   amountY: string,
   account: string
 ) => {
-  const tx = new TransactionBlock();
+  const tx = new Transaction();
   const dataPools = await getListPoolLiquidV3();
   const poolId = dataPools.find(
     (item) =>
@@ -70,6 +70,6 @@ export const buildTxAddLiquidV3 = async (
     slippage,
     tx
   );
-  tx.transferObjects([position], tx.pure(account));
+  tx.transferObjects([position], account);
   return tx;
 };

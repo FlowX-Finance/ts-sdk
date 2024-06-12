@@ -1,12 +1,13 @@
-import { SUI_DECIMALS, TransactionBlock } from "@mysten/sui.js";
+import { Transaction } from "@mysten/sui/transactions";
 import { MODULE, provider, SUI_TYPE, SWAP_V3 } from "../../constants";
 import { BigNumber } from "../../BigNumber";
 import Lodash from "../../lodash";
 import { getBalanceAmount, getCoinsFlowX } from "../../utils";
 import { CoinMetadata, IEstimateGasResult } from "../../types";
+import { SUI_DECIMALS } from "@mysten/sui/utils";
 
 export const estimateGasFee = async (
-  tx: TransactionBlock | any,
+  tx: Transaction | any,
   account?: string
 ): Promise<IEstimateGasResult | undefined> => {
   if (!account) return { fee: "0", amountOut: "0" };
@@ -32,7 +33,7 @@ export const estimateGasFee = async (
     const amountOut = Lodash.reduce(
       listSwapTrans,
       (sum, i) => {
-        return +BigNumber(sum).plus(i.parsedJson.amount_out).toFixed();
+        return +BigNumber(sum).plus((i.parsedJson as any).amount_out).toFixed();
       },
       0
     );

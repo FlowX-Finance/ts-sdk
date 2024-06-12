@@ -1,4 +1,4 @@
-import { TransactionArgument, TransactionBlock } from "@mysten/sui.js";
+import { TransactionResult, Transaction } from "@mysten/sui/transactions";
 import { MODULE, SWAP_V3 } from "../../constants";
 
 export const StartRouting = async (
@@ -6,10 +6,10 @@ export const StartRouting = async (
   coinOutType: string,
   firstRouteCoinOutType: string,
   tradeObject: any,
-  txb?: TransactionBlock
-): Promise<TransactionArgument & TransactionArgument[]> => {
+  txb?: Transaction
+): Promise<TransactionResult> => {
   try {
-    let tx = new TransactionBlock();
+    let tx = new Transaction();
     if (txb) tx = txb;
     // console.log(
     //   "InitPath",

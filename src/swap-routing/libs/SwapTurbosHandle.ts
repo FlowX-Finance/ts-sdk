@@ -1,4 +1,4 @@
-import { TransactionArgument, TransactionBlock } from "@mysten/sui.js";
+import { TransactionResult, Transaction } from "@mysten/sui/transactions";
 import { MODULE, SWAP_V3 } from "../../constants";
 import { CLOCK_ID } from "../../constants";
 
@@ -10,9 +10,9 @@ export const SwapTurbosHandle = async (
   poolId: string,
   feeTier: string | number,
   sqrtPriceLimit: string,
-  txb?: TransactionBlock
-): Promise<TransactionArgument & TransactionArgument[]> => {
-  let tx = new TransactionBlock();
+  txb?: Transaction
+): Promise<TransactionResult> => {
+  let tx = new Transaction();
   // console.log(
   //   "TURBOS",
   //   routeObject,
@@ -35,7 +35,7 @@ export const SwapTurbosHandle = async (
     arguments: [
       routeObject,
       tx.object(poolId),
-      tx.pure(sqrtPriceLimit),
+      tx.pure.u128(sqrtPriceLimit),
       tx.object(
         "0xf1cf0e81048df168ebeb1b8030fad24b3e0b53ae827c25053fff0779c1445b6f"
       ), //Version

@@ -1,4 +1,4 @@
-import { TransactionArgument, TransactionBlock } from "@mysten/sui.js";
+import { TransactionResult, Transaction } from "@mysten/sui/transactions";
 import { MODULE, SWAP_V3 } from "../../constants";
 import { CLOCK_ID } from "../../constants";
 
@@ -9,8 +9,8 @@ export const SwapCetusHandle = async (
   swapXtoY: boolean,
   poolId: string,
   sqrtPriceLimit: string,
-  txb?: TransactionBlock
-): Promise<TransactionArgument & TransactionArgument[]> => {
+  txb?: Transaction
+): Promise<TransactionResult> => {
   // console.log(
   //   "CETUS",
   //   routeObject,
@@ -20,7 +20,7 @@ export const SwapCetusHandle = async (
   //   poolId,
   //   CLOCK_ID
   // );
-  let tx = new TransactionBlock();
+  let tx = new Transaction();
   if (txb) tx = txb;
   return tx.moveCall({
     target: `${SWAP_V3.UNIVERSAL_ROUTER}::${MODULE.UNIVERSAL_ROUTER}::${
@@ -36,7 +36,7 @@ export const SwapCetusHandle = async (
         "0xdaa46292632c3c4d8f31f23ea0f9b36a28ff3677e9684980e4438403a67a3d8f"
       ), //Global config
       tx.object(poolId),
-      tx.pure(sqrtPriceLimit),
+      tx.pure.u128(sqrtPriceLimit),
       tx.object(CLOCK_ID),
     ],
   });

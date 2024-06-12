@@ -1,4 +1,4 @@
-import { TransactionArgument, TransactionBlock } from "@mysten/sui.js";
+import { TransactionResult, Transaction } from "@mysten/sui/transactions";
 import { MODULE, SWAP_V3 } from "../../constants";
 
 export const SwapAfterMathHandle = async (
@@ -8,9 +8,9 @@ export const SwapAfterMathHandle = async (
   coinOutType: string,
   poolId: string,
   amountOut: string,
-  txb?: TransactionBlock
-): Promise<TransactionArgument & TransactionArgument[]> => {
-  let tx = new TransactionBlock();
+  txb?: Transaction
+): Promise<TransactionResult> => {
+  let tx = new Transaction();
   if (txb) tx = txb;
   return tx.moveCall({
     target: `${SWAP_V3.UNIVERSAL_ROUTER}::${MODULE.UNIVERSAL_ROUTER}::aftermath_swap_exact_input`,
@@ -33,7 +33,7 @@ export const SwapAfterMathHandle = async (
       tx.object(
         "0x35d35b0e5b177593d8c3a801462485572fc30861e6ce96a55af6dc4730709278"
       ), //referral_vault
-      tx.pure(amountOut), // Amount out from paths api
+      tx.pure.u64(amountOut), // Amount out from paths api
     ],
   });
 };

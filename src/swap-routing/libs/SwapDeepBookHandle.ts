@@ -1,4 +1,4 @@
-import { TransactionArgument, TransactionBlock } from "@mysten/sui.js";
+import { TransactionResult, Transaction } from "@mysten/sui/transactions";
 import { CLOCK_ID, MODULE, SWAP_V3 } from "../../constants";
 
 export const SwapDeepBookHandle = async (
@@ -8,10 +8,10 @@ export const SwapDeepBookHandle = async (
   swapXtoY: boolean,
   poolId: string,
   lotSize: string,
-  txb?: TransactionBlock
-): Promise<TransactionArgument & TransactionArgument[]> => {
+  txb?: Transaction
+): Promise<TransactionResult> => {
   try {
-    let tx = new TransactionBlock();
+    let tx = new Transaction();
     if (txb) tx = txb;
     return tx.moveCall({
       target: `${SWAP_V3.UNIVERSAL_ROUTER}::${MODULE.UNIVERSAL_ROUTER}::${
@@ -23,11 +23,16 @@ export const SwapDeepBookHandle = async (
         swapXtoY ? coinInType : coinOutType,
         swapXtoY ? coinOutType : coinInType,
       ],
-      arguments: [
+      arguments: swapXtoY ? [
         tx.object(SWAP_V3.UNIVERSAL_TREASURY),
         routeObject,
         tx.object(poolId),
-        tx.pure(lotSize),
+        tx.pure.u64(lotSize),
+        tx.object(CLOCK_ID),
+      ] : [
+        tx.object(SWAP_V3.UNIVERSAL_TREASURY),
+        routeObject,
+        tx.object(poolId),
         tx.object(CLOCK_ID),
       ],
     });
@@ -44,7 +49,7 @@ export const SwapDeepBookHandle = async (
 //   poolId: string,
 //   lootSize: string | number,
 //   txb?: TransactionBlock
-// ): Promise<TransactionArgument & TransactionArgument[]> => {
+// ): Promise<TransactionResult> => {
 //   try {
 //     let tx = new TransactionBlock();
 //     if (txb) tx = txb;

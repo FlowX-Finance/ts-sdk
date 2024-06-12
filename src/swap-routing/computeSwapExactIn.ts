@@ -3,7 +3,7 @@ import { getBalanceAmount } from "../utils";
 import { BigNumb, BigNumber, BigNumber as BN } from "../BigNumber";
 import { estimateGasFee } from "./libs/EstimateGasFee";
 import { txBuild } from "./libs/Txbuild";
-import { TransactionBlock } from "@mysten/sui.js";
+import { Transaction } from "@mysten/sui/transactions";
 import Lodash from "../lodash";
 import { estimatePriceImpact } from "./estimatePriceImpact";
 
@@ -22,7 +22,7 @@ export const computeSwapExactIn = async (
   totalAmountOutInspec: string;
   inRate: string;
   outRate: string;
-  tx: TransactionBlock | any;
+  tx: Transaction | any;
   priceImpact: string;
 }> => {
   try {

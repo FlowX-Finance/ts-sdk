@@ -1,4 +1,4 @@
-import { TransactionBlock } from "@mysten/sui.js";
+import { Transaction } from "@mysten/sui/transactions";
 import {
   ADD_LIQUIDITY_V3,
   CLOCK_ID,
@@ -18,7 +18,7 @@ export const buildTxIncreaseLiquidV3 = async (
   positionObjectId: string,
   slippage: string
 ) => {
-  const tx = new TransactionBlock();
+  const tx = new Transaction();
   return await getTxIncreasePositionLiquidV3(
     coinX,
     coinY,

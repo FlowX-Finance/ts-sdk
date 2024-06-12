@@ -1,16 +1,14 @@
-import { TransactionArgument, TransactionBlock } from "@mysten/sui.js";
+import { TransactionResult, Transaction } from "@mysten/sui/transactions";
 import { MODULE, SWAP_V3 } from "../../constants";
 
 export const InitPath = async (
   coinInType: string,
   coinOutType: string,
   coinInObject: any,
-  feeTier: number,
-  sqrtPriceLimit: string,
-  txb?: TransactionBlock
-): Promise<TransactionArgument & TransactionArgument[]> => {
+  txb?: Transaction
+): Promise<TransactionResult> => {
   try {
-    let tx = new TransactionBlock();
+    let tx = new Transaction();
     if (txb) tx = txb;
     // console.log(
     //   "InitPath",
@@ -23,7 +21,7 @@ export const InitPath = async (
     return tx.moveCall({
       target: `${SWAP_V3.UNIVERSAL_ROUTER}::${MODULE.UNIVERSAL_ROUTER}::initialize_path`,
       typeArguments: [coinInType, coinOutType],
-      arguments: [coinInObject, tx.pure(feeTier), tx.pure(sqrtPriceLimit)],
+      arguments: [coinInObject],
     });
   } catch (error) {
     console.log("InitPath ERROR", error);

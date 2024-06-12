@@ -1,9 +1,10 @@
-import { TransactionArgument, TransactionBlock } from "@mysten/sui.js";
+import { TransactionResult, Transaction } from "@mysten/sui/transactions";
 import { BigNumb, BigNumber } from "../../BigNumber";
 import { MODULE, SUI_TYPE, SWAP_V3 } from "../../constants";
 import { IPartnerFee } from "../../types";
 import { createOption, createPartnerOption } from "../../utils";
 import { getFeeInfoUrl } from "../../swap/libs/getFeeInfoUrl";
+import { bcs } from "@mysten/sui/bcs";
 
 export const InitTrade = async (
   coinInType: string,
@@ -14,7 +15,7 @@ export const InitTrade = async (
   deadline: number,
   pathsAmountOut: number[],
   partnerFee: IPartnerFee,
-  txb?: TransactionBlock
+  txb?: Transaction
 ): Promise<any> => {
   try {
     const { url, commissionOnInput } = getFeeInfoUrl(
@@ -22,7 +23,7 @@ export const InitTrade = async (
       coinOutType,
       partnerFee
     );
-    let tx = new TransactionBlock();
+    let tx = new Transaction();
     if (txb) tx = txb;
     let amountCommission = "0";
     if (url.length > 0) {
@@ -42,10 +43,10 @@ export const InitTrade = async (
         tx.object(SWAP_V3.TRADE_ID_TRACKER),
         tx.object(SWAP_V3.PARTNER_REGISTRY),
         coinInType === SUI_TYPE ? coinObjectIn : tx.object(coinObjectIn),
-        tx.pure(pathAmountOut),
-        tx.pure(BigNumber(slippage).multipliedBy(1e6).toFixed(0)),
-        tx.pure(deadline),
-        tx.pure(pathsAmountOut),
+        tx.pure.u64(pathAmountOut),
+        tx.pure.u64(BigNumber(slippage).multipliedBy(1e6).toFixed(0)),
+        tx.pure.u64(deadline),
+        tx.pure(bcs.vector(bcs.u64()).serialize( pathsAmountOut)),
         createPartnerOption(
           tx,
           partnerFee?.percentage ? 0 : partnerFee?.fixAmount ? 1 : 0,

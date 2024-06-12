@@ -1,4 +1,4 @@
-import { TransactionBlock } from "@mysten/sui.js";
+import { Transaction } from "@mysten/sui/transactions";
 import { ADD_LIQUIDITY_V3, CLOCK_ID, FUNCTION, MODULE } from "../../constants";
 import { CoinMetadata } from "../../types";
 
@@ -9,19 +9,19 @@ export const getTxDecreasePositionLiquidV3 = (
   liquid2Remove: string,
   amountX: string,
   amountY: string,
-  inheritTx?: TransactionBlock
+  inheritTx?: Transaction
 ) => {
-  const tx = inheritTx ?? new TransactionBlock();
+  const tx = inheritTx ?? new Transaction();
   tx.moveCall({
     target: `${ADD_LIQUIDITY_V3.CLMM_PACKAGE}::${MODULE.POSITION_MANAGER}::${FUNCTION.DECREASE_LIQUIDITY}`,
     typeArguments: [coinX.type, coinY.type],
     arguments: [
       tx.object(ADD_LIQUIDITY_V3.POOL_REGISTRY_OBJ),
       tx.object(positionObjectId),
-      tx.pure(liquid2Remove), //desired amount of liquidity to remove
-      tx.pure(amountX), //coinX's portion remove base on amount of remove liquidity
-      tx.pure(amountY), //coinY's portion remove base on amount of remove liquidity
-      tx.pure(Number.MAX_SAFE_INTEGER),
+      tx.pure.u128(liquid2Remove), //desired amount of liquidity to remove
+      tx.pure.u64(amountX), //coinX's portion remove base on amount of remove liquidity
+      tx.pure.u64(amountY), //coinY's portion remove base on amount of remove liquidity
+      tx.pure.u64(Number.MAX_SAFE_INTEGER),
       tx.object(ADD_LIQUIDITY_V3.VERSIONED_OBJ),
       tx.object(CLOCK_ID),
     ],
