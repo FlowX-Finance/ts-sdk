@@ -1,5 +1,6 @@
 # Deprecated
 Project no-longer maintenance, please use `https://www.npmjs.com/package/@flowx-finance/sdk` instead.
+New git: https://github.com/FlowX-Finance/sdk
 
 # Official FlowX Finance TypeScript SDK for Sui
 
