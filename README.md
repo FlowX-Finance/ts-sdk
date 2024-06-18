@@ -1,3 +1,6 @@
+# Deprecated
+Project no-longer maintenance, please use `https://www.npmjs.com/package/@flowx-finance/sdk` instead.
+
 # Official FlowX Finance TypeScript SDK for Sui
 
 An FlowX Typescript SDK is a software development kit that allows developers to interact with FlowX protocols using the Typescript programming language.
@@ -23,7 +26,7 @@ npm i @flowx-pkg/ts-sdk
 ## 1. Retrieve token list in Flowx
 
 ```
-import {getLiquidity, CoinMetadata} from "@flowx-pkg/ts-sdk"
+import {getCoinsFlowX, CoinMetadata} from "@flowx-pkg/ts-sdk"
 
 const coins: CoinMetadata[] = await getCoinsFlowX()
 ```
@@ -98,14 +101,15 @@ Retrieve the most optimal route of smart routing for swap and amount of token us
 
 ```
 import {getSmartRouting} from "@flowx-pkg/ts-sdk"
-const smartRouting:ISmartRouting  = await getSmartRouting(
-	tokenIn,
-	tokenOut,
+const smartRouting:ISmartRouting  = await getSmartRouting({
+	tokenInType,
+	tokenOutType,
 	amountIn,
 	signal,
-	insludeSource,
-	source
-)
+	includeSource,
+	source,
+	partnerFee
+})
 
 interface ISmartRouting {
 	paths: ISmartPathV3[],
@@ -116,12 +120,29 @@ interface ISmartRouting {
 
 | Arguments       | Description                                                                                                    | Type                                                                        |
 | --------------- | -------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| `tokenIn`       | Type of token in                                                                                               | string                                                                      |
-| `tokenOut`      | Type of token out                                                                                              | string                                                                      |
+| `tokenInType`   | Type of token in                                                                                               | string                                                                      |
+| `tokenOutType`  | Type of token out                                                                                              | string                                                                      |
 | `amountIn`      | Amount of token in                                                                                             | string                                                                      |
 | `signal`        | Signal to abort current query                                                                                  | AbortSignal                                                                 |
-| `insludeSource` | Defined way to using `source` to include or exclude dex                                                        | boolean                                                                     |
+| `includeSource` | Defined way to using `source` to include or exclude dex                                                        | boolean                                                                     |
 | `source`        | (Optional) List dex that use to searching smart route. Default when you dont pass this arg is included all dex | Array("FLOWX","FLOWX_CLMM","KRIYA","TURBOS",CETUS", "AFTERMATH","DEEPBOOK") |
+| `partnerFee`    | (Optional) Information of partner                                                                              | IPartnerFee                                                                 |
+
+```
+interface IPartnerFee{
+	tokenType: string[],
+	partnerAddress?: string,
+	percentage?: string,
+	fixAmount?: string,
+	commissionType: "input"| "output"| "tokensType"
+}
+```
+
+`tokensType`: List type of token that will be charged as fee on each transaction. If type of both token in and out appear in the list, tokenin will be select to charge fee.  
+`partnerAddress`: address of partner receive charged fee.  
+`percentage`: Percentage based on amount of of token which charged fee.  
+`fixAmount`:Absolute amount fee charged for each transaction.  
+`commissionType`: Type of commission fee to apply, input - charge fee on input token, output - charge fee on output token, tokensType - charge fee token appear in `tokensType` list.
 
 ### estimateGasFee
 
@@ -148,39 +169,56 @@ Retrieve the transaction block for swap
 
 ```
 import {txBuild} from "@flowx-pkg/ts-sdk"
-const tx: TransactionBock = await txBuild(
-	listSmartPath,
+const tx = await txBuild({
+	listSmartPath: paths,
 	slippage,
-	amountIn,
-	amountOut,
-	coinInType,
+	tokenIn,
+	tokenOut: { ...tokenOut, amount: amountOutDev},
 	account,
-	pathsAmountOut
-)
+	partnerFee
+})
 ```
 
-| Arguments        | Description                                                                                                                                                                                                                                             | Type           |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
-| `listSmartPath`  | List all path of smart routing for current swap, each path may includes one or many route                                                                                                                                                               | ISmartPathV3[] |
-| `slippage`       | Slippage percent (Ex: 1% = 0.01)                                                                                                                                                                                                                        | string         |
-| `amountIn`       | Amount in by decimal value.                                                                                                                                                                                                                             | string         |
-| `amountOut`      | Amount out by decimal value. In case build Tx for inspect transaction: This amount is equivalent to `amountOut` get from `getSmartRouting`. In case build Tx for actual transaction: This amount is equivalent to `amountOut` get from `estimateGasFee` | string         |
-| `coinInType`     | Type of token in                                                                                                                                                                                                                                        | string         |
-| `account`        | Address conducting swap transaction                                                                                                                                                                                                                     | string         |
-| `pathsAmountOut` | (Optional) List amount actual calculated after `estimateGasFee`. Add this argument may turn txBuild to tx for actual transaction. Pass it may turn txBuild to tx for devInpsecTransaction                                                               | string[]       |
+| Arguments           | Description                                                                                                                                                                                                                                                        | Type                                      |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------- |
+| `listSmartPath`     | List all path of smart routing for current swap, each path may includes one or many route                                                                                                                                                                          | ISmartPathV3[]                            |
+| `slippage`          | Slippage percent (Ex: 1% = 0.01)                                                                                                                                                                                                                                   | string                                    |
+| `tokenIn`           | Amount (decimal) and type of token input.                                                                                                                                                                                                                          | ITokenAmount (type:string, amount:string) |
+| `tokenOut`          | Amount (decimal) and type of token out. In case build Tx for inspect transaction: This amount is equivalent to `amountOut` get from `getSmartRouting`. In case build Tx for actual transaction: This amount is equivalent to `amountOut` get from `estimateGasFee` | ITokenAmount (type:string, amount:string) |
+| `account`           | Address conducting swap transaction                                                                                                                                                                                                                                | string                                    |
+| `partnerFee`        | (Optional) Information of partner who will get commission on each transaction.                                                                                                                                                                                     | IPartnerFee                               |
+| `inspecTransaction` | Defined tx build will serve for inspection transaction                                                                                                                                                                                                             | boolean                                   |
 
 ### Usage Swap V3
 
 ```
-import {txBuild, estimateGasFee, getSmartRouting} from "@flowx-pkg/ts-sdk"
+import { txBuild, estimateGasFee, getSmartRouting } from "@flowx-pkg/ts-sdk"
 
-const {paths,amountOut} = await getSmartRouting(coinInType,coinOutType,decimalInAmount,abortQuerySmartRef.current.signal)
+const { paths, amountOut } = await getSmartRouting(
+	coinInType,
+	coinOutType,
+	decimalInAmount,
+	abortQuerySmartRef.current.signal,
+	partnerFee
+)
+const txb = await txBuild({
+	listSmartPath:paths,
+	slippage,tokenIn,
+	tokenOut,account,
+	partnerFee,
+	inspecTransaction:true
+});
 
-const txb = await txBuild(paths,slippage,amountIn,amountOut,coinInType,account);
+const { fee, amountOut:amountOutDev } = await estimateGasFee(txb, account);
 
-const { fee, amountOut:amountOutDev, pathsAmountOut } = await estimateGasFee(txb, account);
-
-const tx = await txBuild(paths,slippage,amountIn,amountOutDev,coinInType,account,pathsAmountOut)
+const tx = await txBuild({
+	listSmartPath: paths,
+	slippage,
+	tokenIn,
+	tokenOut: { ...tokenOut, amount: amountOutDev},
+	account,
+	partnerFee
+})
 ```
 
 ## 7. Liquidity management (V3)
