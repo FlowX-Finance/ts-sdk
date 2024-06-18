@@ -9,7 +9,7 @@ import { asIntN } from "./utils";
 
 const getI32Object = (tickIndex: number, tx: TransactionBlock) => {
   return tx.moveCall({
-    target: `${ADD_LIQUIDITY_V3.CLMM_PACKAGE}::i3z2::${
+    target: `${ADD_LIQUIDITY_V3.CLMM_PACKAGE}::i32::${
       tickIndex < 0 ? "neg_from" : "from"
     }`,
     typeArguments: [],
